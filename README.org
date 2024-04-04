@@ -2,6 +2,10 @@
   - [[#disclaimer][DISCLAIMER]]
   - [[#preliminaries][Preliminaries]]
     - [[#wtf-do-i-need-to-install][WTF do I need to install?]]
+      - [[#linux][Linux]]
+      - [[#macos][macOS]]
+      - [[#bsd][BSD]]
+      - [[#windows][Windows]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -42,30 +46,35 @@ You need a standard compiler and /make/.\\
 You have either /gcc/ or /clang/ pre-installed on UNIX-like OSs,
 so the only thing you will need is /make/.\\
 
-- Linux
+**** Linux
   If it isn't installed by default then consult your distro's
   package docs. This should return something if it's installed: \\
-
-#+BEGIN_SRC
-test
+#+BEGIN_SRC console
+which make
 #+END_SRC
 
-- macOS
-- BSD
-  As with Linux, this is going to depend on your BSD flavor
-  but obviously if you are using BSD you probably shouldn't
-  be reading this. If you use FreeBSD and you are somehow
-  unaware, core /make/ in FreeBSD (i.e. what you use for ports)
-  is not the same thing as the commie GNU /make/
-  that most people are familiar with. You would need to install
-  [[https://www.freshports.org/devel/gmake/][gmake]] to be perfectly
-  consistent with these notes but who cares?\\
-- Windows
+**** macOS
+#+BEGIN_SRC console
+brew install make
+#+END_SRC
+
+**** BSD
+As with Linux, this is going to depend on your BSD flavor
+but obviously if you are using BSD you probably shouldn't
+be reading this. If you use FreeBSD and you are somehow
+unaware, core /make/ in FreeBSD (i.e. what you use for ports)
+is not the same thing as the commie GNU /make/
+that most people are familiar with. You would need to install
+[[https://www.freshports.org/devel/gmake/][gmake]] to be perfectly
+consistent with these notes but who cares?
+**** Windows
   The best starting place is to [[https://upload.wikimedia.org/wikipedia/commons/2/28/Richard_Stallman_at_LibrePlanet_2019.jpg][install gentoo]]
-  first.//
+  first.\\
+
   Okay fine, then you should probably use [[WSL][WSL]] because
   literally nobody but game devs have the sanity or motivation
-  necessary to learn C using Windows APIs.//
+  necessary to learn C using Windows APIs.\\
+
   If you ARE using WSL, you are most likely using Ubuntu:
   #+BEGIN_SRC console
   sudo apt-install make
