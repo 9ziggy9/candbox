@@ -48,8 +48,8 @@ so the only thing you will need is /make/.\\
   package docs. This should return something if it's installed:
 - macOS
   #+BEGIN_SRC console
-  brew install make
-  #+END_SRC
+    brew install make
+#+END_SRC
 - BSD
   As with Linux, this is going to depend on your BSD flavor
   but obviously if you are using BSD you probably shouldn't
