@@ -1,10 +1,11 @@
 * Notes on Low-Level Programming for High-Level Engineers AKA C :TOC_4:
   - [[#disclaimer][DISCLAIMER]]
+  - [[#preliminaries][Preliminaries]]
+    - [[#wtf-do-i-need-to-install][WTF do I need to install?]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
     - [[#kr-c][K&R C]]
-  - [[#preliminaries][Preliminaries]]
 
 ** DISCLAIMER
 #+BEGIN_QUOTE
@@ -31,6 +32,44 @@ any and all statements.\\
 #+HTML: <img src="./media/expert.gif" alt="lawyerings" />
 #+END_QUOTE
 
+** Preliminaries
+We are not going to talk C at all until we cover some basic
+UNIX OS concepts and discuss build tools. Even if you don't
+care about C, this stuff might be useful.
+*** WTF do I need to install?
+You have either gcc or clang pre-installed, so the only
+thing you will need is our build tool: /make/.\\
+- macOS
+  #+BEGIN_SRC console
+  brew install make
+  #+END_SRC
+- Linux
+  If it isn't installed by default then consult your distro's
+  package docs. This should return something if it's installed:
+  #+BEGIN_SRC
+  which make
+  #+END_SRC
+- BSD
+  As with Linux, this is going to depend on your BSD flavor
+  but obviously if you are using BSD you probably shouldn't
+  be reading this. If you use FreeBSD and you are somehow
+  unaware, core `make` in FreeBSD (i.e. what you use for ports)
+  is not the same thing as the communist GNU `make`
+  that most people are familiar with. You will need to install
+  [[https://www.freshports.org/devel/gmake/][gmake]] to be consistent with these
+  notes.\\
+- Windows
+  The best starting place is to [[https://upload.wikimedia.org/wikipedia/commons/2/28/Richard_Stallman_at_LibrePlanet_2019.jpg][install gentoo]]
+  first.//
+  Okay fine, then you should probably use [[WSL][WSL]] because
+  literally nobody but game devs have the sanity or motivation
+  necessary to learn C using Windows APIs.//
+  If you ARE using WSL, you are most likely using Ubuntu:
+  #+BEGIN_SRC console
+  sudo apt-install make
+  #+END_SRC
+  There is also [[https://www.cygwin.com/install.html][cygwin]] but I haven't
+  the slightest idea how that works, so good luck.
 ** References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
@@ -51,8 +90,3 @@ My dude has a way of explaing the things.
 
 *** K&R C
 Obviously...
-
-** Preliminaries
-We are not going to talk C at all until we cover some basic
-UNIX OS concepts and discuss build tools. Even if you don't
-care about C, this stuff might be useful.
