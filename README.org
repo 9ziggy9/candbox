@@ -6,6 +6,7 @@
       - [[#macos][macOS]]
       - [[#bsd][BSD]]
       - [[#windows][Windows]]
+    - [[#makefiles][Makefiles]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -35,7 +36,6 @@ Have fun and please feel free to absolutely roast me for
 any and all statements.\\
 #+HTML: <img src="./media/expert.gif" alt="lawyerings" />
 #+END_QUOTE
-
 ** Preliminaries
 We are not going to talk C at all until we cover some basic
 UNIX OS concepts and discuss build tools. Even if you don't
@@ -80,7 +80,50 @@ consistent with these notes but who cares?
   sudo apt-install make
   #+END_SRC
   There is also [[https://www.cygwin.com/install.html][cygwin]] but I haven't
-  the slightest idea how that works, so good luck.
+  the slightest idea how that works, so good luck.\\
+
+*** Makefiles
+[[https://en.wikipedia.org/wiki/Make_(software)][Makefiles]] are the most
+convenient build tool ever created. They have been
+around for almost 50 years. You can use them for almost
+anything. Start by creating a file titled /Makefile/
+and give it a /target/ "hello"
+#+BEGIN_SRC makefile
+hello:
+  echo hello world
+#+END_SRC
+If you run this via /make/:
+#+BEGIN_SRC console
+$ make hello
+echo hello world
+hello world
+#+END_SRC
+That is, for a specified /target/ the next *indented line*
+is the console command which will be ran. *Makefiles are indent sensitive!*
+If you don't want to see the command you invoked, provide
+a *@* symbol.
+#+BEGIN_SRC makefile
+hello:
+  @echo hello world
+#+END_SRC
+#+BEGIN_SRC console
+$ make hello
+hello world
+#+END_SRC
+You can provide any number of /targets/.
+#+BEGIN_SRC makefile
+hello:
+  @echo hello world
+
+goodbye:
+  @echo goodbye moon
+#+END_SRC
+#+BEGIN_SRC console
+$ make hello
+hello world
+$ make goodbye
+goodbye moon
+#+END_SRC
 ** References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
