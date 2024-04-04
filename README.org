@@ -1,4 +1,12 @@
-* Notes on Low-Level Programming for High-Level Engineers AKA C
+* Notes on Low-Level Programming for High-Level Engineers AKA C :TOC_4:
+  - [[#disclaimer][DISCLAIMER]]
+  - [[#references][References]]
+    - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
+    - [[#beejs-other-guides][Beej's other guides]]
+    - [[#kr-c][K&R C]]
+  - [[#preliminaries][Preliminaries]]
+
+** DISCLAIMER
 #+BEGIN_QUOTE
 *DISCLAIMER*:\\
 
@@ -22,6 +30,7 @@ Have fun and please feel free to absolutely roast me for
 any and all statements.\\
 #+HTML: <img src="./media/expert.gif" alt="lawyerings" />
 #+END_QUOTE
+
 ** References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
@@ -42,3 +51,8 @@ My dude has a way of explaing the things.
 
 *** K&R C
 Obviously...
+
+** Preliminaries
+We are not going to talk C at all until we cover some basic
+UNIX OS concepts and discuss build tools. Even if you don't
+care about C, this stuff might be useful.
