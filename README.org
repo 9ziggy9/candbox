@@ -1,4 +1,5 @@
 * Notes on Low-Level Programming for High-Level Engineers
+#+BEGIN_QUOTE
 The following is a set of notes on low-level system
 programming targetting programmers more accustomed
 to the higher-level world of interpreted languages.\\
@@ -18,3 +19,4 @@ of writing this message.\\
 Have fun and please feel free to absolutely roast me for
 any and all statements.\\
 #+HTML: <img src="./media/expert.gif" alt="lawyerings" />
+#+END_QUOTE
