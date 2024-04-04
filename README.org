@@ -22,19 +22,20 @@ to the higher-level world of interpreted languages.\\
 
 I am *NOT* an expert in C programming and I can barely
 follow any assembler language that is not nasm. This
-document may contain many incorrect statements but I
-bet you that your GPT4 won't say "mother fucker" in an
-introduction, mother fucker.\\
+document may contain many incorrect statements but how
+about you and I go toe-to-toe on Bird Law and see who
+comes out the victor?\\
+
+#+HTML: <img src="./media/expert.gif" alt="lawyerings" />
 
 Each day we've worked on this repo will be separated into
 branches, if you want to follow sequentially as this repo
-has evolved, select the branch by day (day-one) being the
+has evolved, select the branch by day, day-one being the
 branch corresponding to the state of the repo at the time
 of writing this message.\\
 
 Have fun and please feel free to absolutely roast me for
 any and all statements.\\
-#+HTML: <img src="./media/expert.gif" alt="lawyerings" />
 #+END_QUOTE
 ** Preliminaries
 We are not going to talk C at all until we cover some basic
