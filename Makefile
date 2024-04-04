@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
 			 -Wunreachable-code -Wswitch-enum -Wno-gnu
-EXE=./i_should_exist
+EXE=./run
 
 all: main
 
