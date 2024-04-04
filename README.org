@@ -45,9 +45,11 @@ so the only thing you will need is /make/.\\
 - Linux
   If it isn't installed by default then consult your distro's
   package docs. This should return something if it's installed: \\
-  #+BEGIN_SRC console
-wtf
+
+#+BEGIN_SRC
+test
 #+END_SRC
+
 - macOS
 - BSD
   As with Linux, this is going to depend on your BSD flavor
