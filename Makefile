@@ -9,7 +9,7 @@ install: main
 	cp $(EXE) $(HOME)/bin/$(EXE)
 
 main: len main.c
-	$(CC) main.c -o $(EXE) $(CFLAGS) len.o
+	$(CC) main.c -o $(EXE).asm $(CFLAGS) len.o
 
 len: len.c
 	$(CC) -c len.c -o len.o $(CFLAGS)
