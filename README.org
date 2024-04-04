@@ -128,7 +128,7 @@ hello world
 $ make goodbye
 goodbye moon
 #+END_SRC
-You can also provide any number of /directives/ to each target.
+You can also provide any number of /recipes/ to each target.
 #+BEGIN_SRC makefile
 hello:
   @echo hello world
@@ -149,7 +149,7 @@ goodbye sun
 /Targets/ can be composed with other /targets/ as /dependencies/.
 What this means is that the other /targets/ specified to the 
 direct right of the `:` symbol will be evaluated before the
-indented /target/ directives fire.
+indented /target/ recipes fire.
 #+BEGIN_SRC makefile
 hello_goodbye: hello goodbye
   @echo all done
