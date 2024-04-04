@@ -1,4 +1,4 @@
-* Notes on Low-Level Programming for High-Level Engineers
+* Notes on Low-Level Programming for High-Level Engineers AKA C
 #+BEGIN_QUOTE
 *DISCLAIMER*:\\
 
@@ -22,3 +22,23 @@ Have fun and please feel free to absolutely roast me for
 any and all statements.\\
 #+HTML: <img src="./media/expert.gif" alt="lawyerings" />
 #+END_QUOTE
+** References
+There is an infinite supply of C programming resources
+and I'll note a few here in order of what I feel is the
+most helpful.\\
+*** [[https://beej.us/guide/bgc/html/][Beej's Guide to C Programming]]
+[[https://beej.us/guide/bgnet/html][Beej's Guide to Network Programming]]
+is super famous but
+this one is just as incredible in my opinion. I wish I had
+been aware of thes guides' existence when I first started
+writing C. Beej's writing style is incredibly easy to parse
+and he has an incredible sense of what students of the C
+language tend to struggle with. This guide can be read cover
+to cover without any boredom or dullness arising.
+*** [[https://beej.us/guide/][Beej's other guides]]
+As I mentioned before, Beej's most famous guide is the
+Network Programming one but I might as well link his page.
+My dude has a way of explaing the things.
+
+*** K&R C
+Obviously...
