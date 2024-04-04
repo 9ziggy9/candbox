@@ -40,15 +40,15 @@ care about C, this stuff might be useful.
 You need a standard compiler and /make/.\\
 You have either /gcc/ or /clang/ pre-installed on UNIX-like OSs,
 so the only thing you will need is /make/.\\
-- macOS
-  #+BEGIN_SRC console :padline no
-  brew install make
-  #+END_SRC
 - Linux
   If it isn't installed by default then consult your distro's
-  package docs. This should return something if it's installed:
-  #+BEGIN_SRC
+  #+BEGIN_SRC console
   which make
+  #+END_SRC
+  package docs. This should return something if it's installed:
+- macOS
+  #+BEGIN_SRC console
+  brew install make
   #+END_SRC
 - BSD
   As with Linux, this is going to depend on your BSD flavor
