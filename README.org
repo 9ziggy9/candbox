@@ -37,8 +37,9 @@ We are not going to talk C at all until we cover some basic
 UNIX OS concepts and discuss build tools. Even if you don't
 care about C, this stuff might be useful.
 *** WTF do I need to install?
-You have either gcc or clang pre-installed, so the only
-thing you will need is our build tool: /make/.\\
+You need a standard compiler and /make/.\\
+You have either /gcc/ or /clang/ pre-installed on UNIX-like OSs,
+so the only thing you will need is /make/.\\
 - macOS
   #+BEGIN_SRC console
   brew install make
@@ -53,11 +54,11 @@ thing you will need is our build tool: /make/.\\
   As with Linux, this is going to depend on your BSD flavor
   but obviously if you are using BSD you probably shouldn't
   be reading this. If you use FreeBSD and you are somehow
-  unaware, core `make` in FreeBSD (i.e. what you use for ports)
-  is not the same thing as the communist GNU `make`
-  that most people are familiar with. You will need to install
-  [[https://www.freshports.org/devel/gmake/][gmake]] to be consistent with these
-  notes.\\
+  unaware, core /make/ in FreeBSD (i.e. what you use for ports)
+  is not the same thing as the commie GNU /make/
+  that most people are familiar with. You would need to install
+  [[https://www.freshports.org/devel/gmake/][gmake]] to be perfectly
+  consistent with these notes but who cares?\\
 - Windows
   The best starting place is to [[https://upload.wikimedia.org/wikipedia/commons/2/28/Richard_Stallman_at_LibrePlanet_2019.jpg][install gentoo]]
   first.//
