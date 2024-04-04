@@ -15,4 +15,4 @@ len: len.c
 	$(CC) -c len.c -o len.o $(CFLAGS)
 
 clean:
-	rm -rf $(EXE)
+	rm -rf $(EXE) *.o
