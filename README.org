@@ -129,7 +129,7 @@ $ make goodbye
 goodbye moon
 #+END_SRC
 /Targets/ can be composed with other /targets/ as /dependencies/.
-What this means is that the other /target/s specified to the 
+What this means is that the other /targets/ specified to the 
 direct right of the `:` symbol will be evaluated before the
 indented /target/ directives fire.
 #+BEGIN_SRC makefile
@@ -210,6 +210,7 @@ $ make
 hello world
 goodbye moon
 i literally dont matter
+but at least its Thu Apr 4 01
 #+END_SRC
 That's enough for now, we're actually ready to start a C project.
 ** References
