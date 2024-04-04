@@ -1,0 +1,10 @@
+CC=clang
+CFLAGS=-Wall -Wextra -pedantic -Wconversion \
+			 -Wunreachable-code -Wswitch-enum -Wno-gnu
+EXE=run
+
+all: main.c
+	$(CC) main.c -o $(EXE) $(CFLAGS)
+
+clean:
+	rm -rf $(EXE)
