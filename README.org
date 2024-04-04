@@ -1,0 +1,4 @@
+* Notes on Low-Level Programming for High-Level Engineers
+The following is a set of notes on low-level system
+programming targetting programmers more accustomed
+to the higher-level world of interpreted languages.
