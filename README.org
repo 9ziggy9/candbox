@@ -102,8 +102,9 @@ $ make hello
 echo hello world
 hello world
 #+END_SRC
-That is, for a specified /target/ the next *tabbed line*
-is the console command which will be ran. *Makefiles are tab sensitive!*
+That is, for a specified /target/ the set of *tabbed lines*
+directly beneath are the commands which will be ran (called a /recipe/)).
+*Makefiles are tab sensitive!*
 If you don't want to see the command you invoked, provide
 a *@* symbol.
 #+BEGIN_SRC makefile
