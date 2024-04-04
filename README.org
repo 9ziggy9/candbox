@@ -85,7 +85,7 @@ consistent with these notes but who cares?
 *** Makefiles
 *IMPORTANT*: You can't copy paste this code because Makefiles
 are whitespace sensitive and this org file doesn't preserve
-tabs. :( //
+tabs. :( \\
 
 [[https://en.wikipedia.org/wiki/Make_(software)][Makefiles]] are the most
 convenient build tool ever created. They have been
