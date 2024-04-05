@@ -4,9 +4,10 @@
 #include <stdio.h>
 
 typedef enum { SUCCESS = 0, FAILURE } ArrayOpResult;
+
 typedef struct {
-  int *elements;
-  size_t size;
+  int *elems;
+  size_t cap;
   size_t length;
 } Array;
 
@@ -29,22 +30,26 @@ void array_print(const Array *xs) {
   if (xs->length == 0) printf("EMPTY");
   else
     for (size_t n = 0; n < xs->length; n++) {
-      printf("%d%s", xs->elements[n], (n < xs->length - 1) ? ", " : "\0");
+      printf("%d%s", xs->elems[n], (n < xs->length - 1) ? ", " : "\0");
     }
   printf(" }\n");
 }
 
 Array array_new(int *xs, size_t sz) {
-  return (Array) { .size = sz, .length = 0, .elements = xs };
+  return (Array) { .cap = sz, .length = 0, .elems = xs };
 }
 
 Array array_init(int *xs, size_t sz) {
-  return (Array) { .size = sz, .length = sz, .elements = xs };
+  return (Array) { .cap = sz, .length = sz, .elems = xs };
+}
+
+Array darray_new(int *xs, size_t init_sz) {
+  return (Array) { .cap = init_sz, .length = 0, .elems = xs};
 }
 
 ArrayOpResult array_push(Array *xs, int x) {
-  if (xs->length >= xs->size) return FAILURE;
-  xs->elements[xs->length++] = x;
+  if (xs->length >= xs->cap) return FAILURE;
+  xs->elems[xs->length++] = x;
   return SUCCESS;
 }
 #endif // ARRAY_IMPL
