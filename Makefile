@@ -12,11 +12,8 @@ pre: main.c
 install: main
 	cp $(EXE) $(HOME)/bin
 
-main: len main.c
-	$(CC) main.c -o $(EXE) $(CFLAGS) len.o
-
-len: len.c
-	$(CC) -c len.c -o len.o $(CFLAGS)
+main: main.c
+	$(CC) main.c -o $(EXE) $(CFLAGS)
 
 clean:
-	rm -rf $(EXE) *.o
+	rm -rf $(EXE) *.o *.i
