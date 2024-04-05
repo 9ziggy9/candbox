@@ -13,6 +13,7 @@
     - [[#kr-c][K&R C]]
 
 ** DISCLAIMER
+
 #+BEGIN_QUOTE
 *DISCLAIMER*:\\
 
@@ -37,6 +38,7 @@ of writing this message.\\
 Have fun and please feel free to absolutely roast me for
 any and all statements.\\
 #+END_QUOTE
+
 ** Preliminaries
 We are not going to talk C at all until we cover some basic
 UNIX OS concepts and discuss build tools. Even if you don't

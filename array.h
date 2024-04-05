@@ -4,15 +4,14 @@
 #include <stdio.h>
 
 typedef enum { SUCCESS = 0, FAILURE } ArrayOpResult;
-
 typedef struct {
-  int *elems;
+  int *  elems;
   size_t cap;
   size_t length;
 } Array;
 
 #define __ARRAY_EXTRACT_SIZE__(xs) xs, sizeof(xs) / sizeof(xs[0])
-#define __ARRAY_BIND_SIZE__(sz) ((int [sz]){0}), sz
+#define __ARRAY_BIND_SIZE__(sz)    ((int [sz]){0}), sz
 
 #define ARRAY_INIT(xs) array_init(__ARRAY_EXTRACT_SIZE__(xs));
 Array array_init(int *, size_t);
@@ -41,10 +40,6 @@ Array array_new(int *xs, size_t sz) {
 
 Array array_init(int *xs, size_t sz) {
   return (Array) { .cap = sz, .length = sz, .elems = xs };
-}
-
-Array darray_new(int *xs, size_t init_sz) {
-  return (Array) { .cap = init_sz, .length = 0, .elems = xs};
 }
 
 ArrayOpResult array_push(Array *xs, int x) {
