@@ -1,6 +1,7 @@
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
-			 -Wunreachable-code -Wswitch-enum -Wno-gnu
+			 -Wunreachable-code -Wswitch-enum -Wno-gnu \
+			 -ggdb
 EXE=./run
 
 all: main
