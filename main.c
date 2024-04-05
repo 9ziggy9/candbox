@@ -1,13 +1,21 @@
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
+// BEGIN: custom logs
+#define TRACE_FUNCTION_NAME printf("%s() :: ", __func__);
+// END: custom logs
+
+// BEGIN: simple C array macro example.
 #define XS_LEN 4
 #define PRINT_C_ARRAY(XS) print_c_array(XS, XS_LEN)
+void print_c_array(int [], size_t length);
+// END: simple C array macro example.
 
-void print_c_array(int xs[], size_t length);
-size_t len(const char *str);
+// BEGIN: augmented fixed length arrays
+typedef enum {
+  SUCCESS = 0,
+  FAILURE,
+} ArrayOpResult;
 
 typedef struct {
   int *elements;
@@ -15,63 +23,68 @@ typedef struct {
   size_t length;
 } Array;
 
-#define FUNCTION_NAME printf("%s() :: ", __func__);
+void print_fixed_array(Array *);
 
-void print_fixed_array(Array xs) {
-  FUNCTION_NAME
-  printf("%s\n", (NULL == (0) ? "true" : "false"));
-  printf("{ ");
-  for (size_t n = 0; n < xs.length; n++) {
-    printf("%d%s", xs.elements[n], (n < xs.length - 1) ? ", " : "\0");
-  }
-  printf(" }\n");
-}
+#define __ARRAY_EXTRACT_SIZE__(xs) xs, sizeof(xs) / sizeof(xs[0])
+#define __ARRAY_BIND_SIZE__(sz) ((int [sz]){0}), sz
 
-typedef enum {
-  SUCCESS = 0,
-  FAILURE,
-} ArrayOpResult ;
+#define ARRAY_INIT(xs) array_init(__ARRAY_EXTRACT_SIZE__(xs))
+Array array_init(int *, size_t); // stack allocatable
 
-// new
-Array array_new(size_t size) {
-  return (Array) {
-    .size     = size,
-    .length   = 0,
-    .elements = (int *) calloc(size, sizeof(int))
-  };
-}
+#define ARRAY_NEW(sz) array_new(__ARRAY_BIND_SIZE__(sz))
+Array array_new(int *, size_t); // stack allocatable
 
-// push
-// DEFINITION: (*xs).length == xs->length
-ArrayOpResult array_push(Array *xs, int x) {
-  if (xs->length >= xs->size) return FAILURE;
-  xs->elements[xs->length++] = x;
-  return SUCCESS;
-}
-
-// fns and stuff
-// macros
-
-// dynamic arrays <-- realloc
+ArrayOpResult array_push(Array *, int);
+// END: augmented fixed length arrays
 
 int main(void) {
-  print_c_array((int []){1,2,3,4}, XS_LEN); // XS_LEN MUST BE KNOWN
-  PRINT_C_ARRAY(((int []){1,2,3,4})); // macro hack
 
-  Array xs = array_new(4);
-  array_push(&xs, 1);
-  array_push(&xs, 2);
-  array_push(&xs, 3);
-  array_push(&xs, 4);
-  print_fixed_array(xs);
+  Array xs = ARRAY_INIT(((int []){1,2,3,4,5}));
+  xs.elements[0] = -100;
+  print_fixed_array(&xs);
+
+  Array ys = ARRAY_NEW(10);
+  print_fixed_array(&ys);
+
+
   return 0;
 }
 
+// BEGIN: c_array impl
 void print_c_array(int xs[], size_t length) {
-  FUNCTION_NAME
+  TRACE_FUNCTION_NAME;
   printf("{ ");
   for (size_t n = 0; n < length; n++) {
     printf("%d%s", xs[n], (n < length - 1) ? ", " : "\0");
   }
   printf(" }\n");
 }
+// END: c_array impl
+
+void print_fixed_array(Array *xs) {
+  TRACE_FUNCTION_NAME;
+  printf("(length: %zu) :: (size: %zu) ", xs->length, xs->size);
+  printf("{ ");
+  if (xs->length == 0) printf("%s", "EMPTY");
+  else
+    for (size_t n = 0; n < xs->length; n++) {
+      printf("%d%s", xs->elements[n], (n < xs->length - 1) ? ", " : "\0");
+    }
+  printf(" }\n");
+}
+
+// BEGIN: fixed array impl
+Array array_new(int *xs, size_t sz) { // heap allocated
+  return (Array) { .size = sz, .length = 0, .elements = xs };
+}
+
+Array array_init(int *xs, size_t sz) {
+  return (Array) { .size = sz, .length = sz, .elements = xs };
+}
+
+ArrayOpResult array_push(Array *xs, int x) {
+  if (xs->length >= xs->size) return FAILURE;
+  xs->elements[xs->length++] = x;
+  return SUCCESS;
+}
+// END: fixed array impl

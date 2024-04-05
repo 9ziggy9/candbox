@@ -6,6 +6,9 @@ EXE=./run
 
 all: main
 
+pre: main.c
+	$(CC) -E main.c -o main.i
+
 install: main
 	cp $(EXE) $(HOME)/bin
 
