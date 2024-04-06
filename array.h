@@ -56,3 +56,10 @@ typedef enum { FIXED, DYNAMIC } ArrVariant;
   { .elems = NULL, .cap = C, .len = V == FIXED ? C : 0, .variant = V }        \
 
 #endif // ARRAY_H_
+
+/*
+
+  TODO: ARRAY_FROM()
+  TODO: error checking in general
+
+*/
