@@ -1,3 +1,6 @@
+#+TITLE: Intro to C for High-Level 'Grammers
+#+AUTHOR: 9ziggy9
+#+OPTIONS: broken-links:t
 * Notes on Low-Level Programming for High-Level Engineers AKA C :TOC_4:
   - [[#disclaimer][DISCLAIMER]]
   - [[#preliminaries][Preliminaries]]
@@ -256,13 +259,12 @@ clean:
 #+END_SRC
 
 And at last, perhaps the simplest C program imaginable:
-#+TITLE: main.c
+#+CAPTION: main.c
 #+BEGIN_SRC c
 int main(void) {
   return 0;
 }
 #+END_SRC
-k
 ** References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
