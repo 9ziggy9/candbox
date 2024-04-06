@@ -1,8 +1,8 @@
 #+TITLE: Intro to C for High-Level 'Grammers
 #+AUTHOR: 9ziggy9
 * Contents :TOC_4:
-  - [[#disclaimer][DISCLAIMER]]
-  - [[#preliminaries][Preliminaries]]
+- [[#disclaimer][DISCLAIMER]]
+- [[#preliminaries][Preliminaries]]
     - [[#wtf-do-i-need-to-install][WTF do I need to install?]]
       - [[#linux][Linux]]
       - [[#macos][macOS]]
@@ -13,13 +13,14 @@
       - [[#examining-the-makefile][Examining the Makefile]]
       - [[#the-path-variable-aka-whats-with--][The /PATH/ variable aka what's with "./" ???]]
       - [[#amending-the-makefile-to-install-software][Amending the Makefile to /install/ software]]
-  - [[#c-basics][C Basics]]
-  - [[#references][References]]
+- [[#c-is-what-it-is-and-it-isnt-what-it-isnt][C is what it is and it /isn't what it isn't/]]
+    - [[#c-is-weakly-typed][C is *weakly* typed]]
+- [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
     - [[#kr-c][K&R C]]
 
-** DISCLAIMER
+* DISCLAIMER
 
 #+BEGIN_QUOTE
 *DISCLAIMER*:\\
@@ -46,7 +47,7 @@ Have fun and please feel free to absolutely roast me for
 any and all statements.\\
 #+END_QUOTE
 
-** Preliminaries
+* Preliminaries
 We are not going to talk C at all until we cover some basic
 UNIX OS concepts and discuss build tools. Even if you don't
 care about C, this stuff might be useful.
@@ -439,8 +440,48 @@ We can come back to fancy ways to augment our Makefile to assist in installation
 but odds are the majority of people who care to even receive this Makefile are
 going to understand that they must specify an appropriate /BIN_DIR/.
 
-** C Basics
-** References
+* C is what it is and it /isn't what it isn't/
+*** C is *weakly* typed
+In C, only a small set of /primitive/ data types carry any actual /semantics/.
+For instance, declaring a /variable/ as /float/ informs the compiler how it
+should /process/ the value I am giving it in memory. To us, the /float/ may
+carry the /semantics/ of the real number /2.75/, but to the compiler, it knows
+to store and /represent/ the underlying /DATA/ as an
+IEEE 754 floating-point number and apply arithmetic operations accordingly.
+The value /2.75/ to us can, in the real world of computers, be /represented/ as
+the value /0x40300000/. That is if you like, the so called IEEE 754 standard
+provides an /implementation/ of our "real number" /interface/ we call /float/.\\
+
+Exposing this reality involves a bit of misdirection (later we'll call this
+/indirection/ ;)). 
+
+#+BEGIN_SRC c
+#include <stdio.h>
+
+int main(void) {
+  float x = 2.75;
+  printf("x is %x\n", *(int *) &x);
+  return 0;
+}
+#+END_SRC
+
+#+BEGIN_SRC console
+$ make && ./run
+> x is 40300000
+#+END_SRC
+
+This is an example of something called /type punning/ and it is a mechanism by
+which we can circumvent the /type system/ or the (/interface/implementation/
+construct of the compiler if you'd like) to get at the underlying /raw/ data
+on which the CPU operates.
+*IMHO, this is what it REALLY means to be WEAKLY typed*. \\
+
+Now, I know what you're thinking,
+"wtf is with the /%/, /*/ and /&/ stuff, you haven't even done hello world!"
+Well, let's start "hello, world!" and build up in increasing detail until we
+understand *this* particular example and by doing so I hope that you will then
+understand the scariest of scariest topics in C /what is a pointer?/.
+* References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
 most helpful.\\

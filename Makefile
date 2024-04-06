@@ -15,8 +15,11 @@ install: main
 main: main.c
 	$(CC) main.c -o $(EXE) $(CFLAGS)
 
+test: test.c
+	$(CC) test.c -o ./test $(CFLAGS)
+
 clean:
-	rm -rf $(EXE) *.o *.i
+	rm -rf $(EXE) ./test *.o *.i
 
 git:
 	git add . && git commit -m "automated push" && git push
