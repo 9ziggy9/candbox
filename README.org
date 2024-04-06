@@ -10,6 +10,7 @@
       - [[#windows][Windows]]
     - [[#makefiles][Makefiles]]
     - [[#building-a-c-project][Building a C project]]
+      - [[#examining-the-makefile][Examining the Makefile]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -263,6 +264,86 @@ int main(void) {
   return 0;
 }
 #+END_SRC
+
+Note that =main.c= should exist at the project's root, together with the
+=Makefile=. When after we run /make/, we can run our program by giving
+it's executable name _relative_ to our current directory. i.e.,
+#+BEGIN_SRC console
+$ make && ./run
+#+END_SRC
+
+Aaaaaaand.... Nothing happens. :D \\
+What this program does it simply return the
+number 0 to standard out (/stdout/). It is a convention in UNIX that an "exit
+value of zero" is an indication of _success_. \\
+It is extremely important that this convention is followed. This is how
+we have the capability of running conditional shell commands and applications in
+succession. Observe the following behavior with our newly compiled binary:
+
+#+BEGIN_SRC console
+$ ./run && echo hello world!
+> hello world!
+$ ./run || echo "hello world!"
+> 
+#+END_SRC
+
+Now, you may be asking, "why zero??? wouldn't boolean logic dictate true be
+1 as convention?" That is an excellent question! In fact, try running this:
+
+#+BEGIN_SRC console
+$ true && echo hello world!
+> hello world!
+$ true || echo "hello world!"
+> 
+#+END_SRC
+
+Well dear friends, the `true` command is in fact a /C program which simply
+return 0 on every call/*. Lol.
+This convention was chosen long, /long/ ago to allow for context to be given
+to /any/ *non-zero* exit code.\\
+
+You can view the previous exit code in shell by using the `$?` special variable.
+#+BEGIN_SRC console
+$ true
+$ echo $?
+> 0
+$ false
+$ echo $?
+> 1
+$ ./run
+$ echo $?
+> 0
+#+END_SRC
+
+*NOTE: most modern shells build this command in, rather than relying on the set
+of system core utilities.
+[[https://www.gnu.org/software/coreutils/manual/coreutils.html#true-invocation]]
+
+**** Examining the Makefile
+
+*filename*: =Makefile=
+#+BEGIN_SRC makefile
+CC=clang
+CFLAGS=-Wall -Wextra -pedantic -Wconversion \
+			 -Wunreachable-code -Wswitch-enum -Wno-gnu
+EXE=run
+
+all: main.c
+	$(CC) main.c -o $(EXE) $(CFLAGS)
+
+clean:
+	rm -rf $(EXE)
+#+END_SRC
+
+I have defined a view variables here, /CC/ for instance specifies what compiler
+I would like to use, /EXE/ is an identifier for my eventual executable binary.
+
+The /clean/ target is a convenient way that I can remove the previous executable
+binary. Probably the most interesting of these variables is /CFLAGS/. Compiler
+flags of course are used to set the "strictness" of our compiler (among other
+things). I don't want to go into the details of why I have chosen these flags at
+the present time, just suffice it to say that this is a very /strict/ set and a
+very good collection in my humble opinion.
 
 ** References
 There is an infinite supply of C programming resources
