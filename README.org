@@ -239,8 +239,8 @@ but at least its Thu Apr 4 01
 #+END_SRC
 That's enough for now, we're actually ready to start a C project.
 *** Building a C project
+Here comes some boilerplate. \\
 
-Here comes some boilerplate.
 *filename*: =Makefile=
 #+BEGIN_SRC makefile
 CC=clang
