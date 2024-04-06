@@ -13,6 +13,7 @@
       - [[#examining-the-makefile][Examining the Makefile]]
       - [[#the-path-variable-aka-whats-with--][The /PATH/ variable aka what's with "./" ???]]
       - [[#amending-the-makefile-to-install-software][Amending the Makefile to /install/ software]]
+  - [[#c-basics][C Basics]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -438,6 +439,7 @@ We can come back to fancy ways to augment our Makefile to assist in installation
 but odds are the majority of people who care to even receive this Makefile are
 going to understand that they must specify an appropriate /BIN_DIR/.
 
+** C Basics
 ** References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
