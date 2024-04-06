@@ -15,6 +15,17 @@ typedef struct {
   ArrayVariant variant;
 } Array;
 
+#define ARRAY(T) struct { \
+  T*     elems;           \
+  size_t cap;             \
+  size_t len;             \
+  ArrayVariant variant;   \
+}                         \
+
+#define GENERIC_PUSH(XS) do {\
+  \
+}\
+
 #define __ARRAY_EXTRACT_SIZE__(XS) XS, sizeof(XS) / sizeof(XS[0])
 #define __ARRAY_STACK_INJECT__(SZ) (int [SZ]){0}, SZ
 
@@ -89,10 +100,10 @@ ArrayOpResult array_push(Array *xs, int x) {
 
 ArrayOpResult array_dyn_push(Array *xs, int x) {
   if (xs->variant != DYNAMIC) return FAILURE;
-  if (xs->length == xs->cap) {
+  if (xs->length >= xs->cap) {
     xs->cap *= 2;
     xs->elems = (int *)
-      realloc(xs->elems, (sizeof(int)) * xs->cap);
+      realloc(xs->elems, (sizeof(xs->elems)) * xs->cap);
   }
   xs->elems[xs->length++] = x;
   return SUCCESS;
