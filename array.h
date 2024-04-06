@@ -1,120 +1,58 @@
 #ifndef ARRAY_H_
 #define ARRAY_H_
 
-#include "log.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "log.h"
 
-typedef enum { SUCCESS, FAILURE } ArrayOpResult;
-typedef enum { FIXED,   DYNAMIC } ArrayVariant;
+typedef enum { FIXED, DYNAMIC } ArrVariant;
 
-typedef struct {
-  int *  elems;
-  size_t cap;
-  size_t length;
-  ArrayVariant variant;
-} Array;
+#define __ARR_INIT_CAP__  32
+#define __ARR_GROW_RATE__ 2
+#define __ARR_RESIZE_CAP__(C) C == 0                                          \
+    ? __ARR_INIT_CAP__                                                        \
+    : __ARR_GROW_RATE__ * C                                                   \
 
-#define ARRAY(T) struct { \
-  T*     elems;           \
-  size_t cap;             \
-  size_t len;             \
-  ArrayVariant variant;   \
-}                         \
+#define ARRAY(T) struct {                                                     \
+  T * elems;                                                                  \
+  size_t cap;                                                                 \
+  size_t len;                                                                 \
+  ArrVariant variant;                                                         \
+}                                                                             \
 
-#define GENERIC_PUSH(XS) do {\
-  \
-}\
+#define ARRAY_PUSH(XS, X)                                                     \
+  do {                                                                        \
+      if((XS)->variant == FIXED) {                                            \
+        TRACE_POSITION                                                        \
+        fprintf(stderr, "cannot push into fixed array\n");                    \
+        exit(EXIT_FAILURE);                                                   \
+      }                                                                       \
+      if ((XS)->len >= (XS)->cap) {                                           \
+        (XS)->cap = __ARR_RESIZE_CAP__((XS)->cap);                            \
+        (XS)->elems = realloc((XS)->elems, (XS)->cap * sizeof(*(XS)->elems)); \
+      }                                                                       \
+      (XS)->elems[(XS)->len++] = (X);                                         \
+  } while(0);                                                                 \
 
-#define __ARRAY_EXTRACT_SIZE__(XS) XS, sizeof(XS) / sizeof(XS[0])
-#define __ARRAY_STACK_INJECT__(SZ) (int [SZ]){0}, SZ
+#define ARRAY_CAT(XS, YS)                                                     \
+  do {                                                                        \
+    if((XS)->variant != (YS)->variant) {                                      \
+      TRACE_POSITION                                                          \
+      fprintf(stderr, "cannot concatenate mixed variants\n");                 \
+      exit(EXIT_FAILURE);                                                     \
+    }                                                                         \
+    if (((XS)->len + (YS)->len) > (XS)->cap) {                                \
+      if ((XS)->cap == 0) (XS)->cap = __ARR_INIT_CAP__;                       \
+      while (((XS)->len + (YS)->len) > (XS)->cap) (XS)->cap *= 2;             \
+      (XS)->elems = realloc((XS)->elems, (XS)->cap * sizeof(*(XS)->elems));   \
+    }                                                                         \
+    memcpy(((XS)->elems + (XS)->len),                                         \
+            (YS)->elems, (YS)->len * sizeof(*(XS)->elems));                   \
+    (XS)->len += (YS)->len;                                                   \
+  } while(0);                                                                 \
 
-#define ARRAY_INIT(V, XS) array_init(V, __ARRAY_EXTRACT_SIZE__(XS));
-Array array_init(ArrayVariant, int *, size_t);
+#define ARRAY_INIT(V, C)                                                      \
+  { .elems = NULL, .cap = C, .len = V == FIXED ? C : 0, .variant = V }        \
 
-#define ARRAY_NEW(V, SZ) array_new(V, __ARRAY_STACK_INJECT__(SZ));
-Array array_new(ArrayVariant, int *, size_t);
-
-void array_log(const Array *);
-ArrayOpResult array_push(Array *, int);
-ArrayOpResult array_fix_push(Array *, int);
-ArrayOpResult array_dyn_push(Array *, int);
-
-Array array_dyn_init(ArrayVariant, int *, size_t);
-Array array_fix_init(ArrayVariant, int *, size_t);
-Array array_dyn_new (ArrayVariant, size_t);
-Array array_fix_new (ArrayVariant, int *, size_t);
-
-#ifdef ARRAY_IMPL
-void array_print(const Array *xs) {
-  TRACE_FUNCTION_NAME;
-  printf("{ ");
-  if (xs->length == 0) printf("EMPTY");
-  else
-    for (size_t n = 0; n < xs->length; n++) {
-      printf("%d%s", xs->elems[n], (n < xs->length - 1) ? ", " : "\0");
-    }
-  printf(" }\n");
-}
-
-Array array_init(ArrayVariant v, int *xs, size_t sz) {
-  return v == DYNAMIC
-    ? array_dyn_init(v, xs, sz)
-    : array_fix_init(v, xs, sz);
-}
-
-Array array_new(ArrayVariant v, int *xs, size_t sz) {
-  return v == DYNAMIC
-    ? array_dyn_new(v, sz)
-    : array_fix_new(v, xs, sz);
-}
-
-Array array_dyn_init(ArrayVariant v, int *xs, size_t sz) {
-  int *ys =  (int *) malloc(sizeof(int) * sz);
-  for (size_t n = 0; n < sz; n++) ys[n] = xs[n];
-  return (Array)
-    { .cap = sz, .length = sz, .elems = ys, .variant = v };
-}
-
-Array array_dyn_new(ArrayVariant v, size_t sz) {
-  int *xs =  (int *) calloc(sizeof(int) * sz, 0);
-  return (Array)
-    { .cap = sz, .length = 0, .elems = xs, .variant = v};
-}
-
-Array array_fix_init(ArrayVariant v, int *xs, size_t sz) {
-  return (Array)
-    { .cap = sz, .length = sz, .elems = xs, .variant = v };
-}
-
-Array array_fix_new(ArrayVariant v, int *xs, size_t sz) {
-  return (Array)
-    { .cap = sz, .length = 0, .elems = xs, .variant = v };
-}
-
-ArrayOpResult array_push(Array *xs, int x) {
-  return xs->variant == DYNAMIC
-    ? array_dyn_push(xs, x)
-    : array_fix_push(xs, x);
-}
-
-ArrayOpResult array_dyn_push(Array *xs, int x) {
-  if (xs->variant != DYNAMIC) return FAILURE;
-  if (xs->length >= xs->cap) {
-    xs->cap *= 2;
-    xs->elems = (int *)
-      realloc(xs->elems, (sizeof(xs->elems)) * xs->cap);
-  }
-  xs->elems[xs->length++] = x;
-  return SUCCESS;
-}
-
-ArrayOpResult array_fix_push(Array *xs, int x) {
-  if (xs->length >= xs->cap || xs->variant != FIXED)
-    return FAILURE;
-  xs->elems[xs->length++] = x;
-  return SUCCESS;
-}
-
-#endif // ARRAY_IMPL
 #endif // ARRAY_H_
