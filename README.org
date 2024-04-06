@@ -7,6 +7,7 @@
       - [[#bsd][BSD]]
       - [[#windows][Windows]]
     - [[#makefiles][Makefiles]]
+    - [[#building-hello-world][Building "hello, world!"]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -235,6 +236,21 @@ i literally dont matter
 but at least its Thu Apr 4 01
 #+END_SRC
 That's enough for now, we're actually ready to start a C project.
+*** Building "hello, world!"
+Here is a boilerpalte Makefile:
+#+NAME: Makefile
+#+BEGIN_SRC makefile
+CC=clang
+CFLAGS=-Wall -Wextra -pedantic -Wconversion \
+			 -Wunreachable-code -Wswitch-enum -Wno-gnu
+EXE=run
+
+all: main.c
+	$(CC) main.c -o $(EXE) $(CFLAGS)
+
+clean:
+	rm -rf $(EXE)
+#+END_SRC
 ** References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the

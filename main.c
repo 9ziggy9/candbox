@@ -6,6 +6,7 @@ int main(void) {
 
   ARRAY_PUSH(&xs, "hello");
   ARRAY_PUSH(&xs, "world");
+
   ARRAY_PUSH(&ys, "goodbye");
   ARRAY_PUSH(&ys, "moon");
 
