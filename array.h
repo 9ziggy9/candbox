@@ -1,11 +1,12 @@
 #ifndef ARRAY_H_
 #define ARRAY_H_
+
 #include "log.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 typedef enum { SUCCESS, FAILURE } ArrayOpResult;
-typedef enum { FIXED, DYNAMIC } ArrayVariant;
+typedef enum { FIXED,   DYNAMIC } ArrayVariant;
 
 typedef struct {
   int *  elems;
