@@ -11,6 +11,8 @@
     - [[#makefiles][Makefiles]]
     - [[#building-a-c-project][Building a C project]]
       - [[#examining-the-makefile][Examining the Makefile]]
+      - [[#the-path-variable-aka-whats-with--][The /PATH/ variable aka what's with "./" ???]]
+      - [[#amending-the-makefile-to-install-software][Amending the Makefile to /install/ software]]
   - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -344,6 +346,97 @@ flags of course are used to set the "strictness" of our compiler (among other
 things). I don't want to go into the details of why I have chosen these flags at
 the present time, just suffice it to say that this is a very /strict/ set and a
 very good collection in my humble opinion.
+
+**** The /PATH/ variable aka what's with "./" ???
+In order to execute our application, we MUST specify the path to it's binary.
+That is, we cannot simply run it with /run/, that is, not yet.\\
+
+You see, when we run
+#+BEGIN_SRC console
+$ ./run
+#+END_SRC
+The operating system transforms the relative path /./run/ into an absolute path
+that may look something like: //home/ziggy/src/my_app/run/ \\
+In fact, this has to be done for ALL executables.\\
+So why is it that some utilities on your machine like /ls/ or /echo/ can be
+called without this specification? The answer is through an
+/environment variable/ called /PATH/. On my system, my path variable looks like
+this:
+#+BEGIN_SRC console
+$ echo $PATH
+> /home/ziggy/.opam/default/bin:/home/ziggy/.opam/default/bin:/home/ziggy/.cabal/bin:/home/ziggy/.ghcup/bin:/home/ziggy/.nvm/versions/nod
+e/v21.6.1/bin:/home/ziggy/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/emulator:/opt/android-sdk/tools:/opt/andr
+oid-sdk/tools/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/ziggy/bin:/home/ziggy/third
+-party/julia-1.8.4/bin:/home/ziggy/go/bin:/home/ziggy/.local/bin:/home/ziggy/.fzf/bin:/home/ziggy/bin:/home/ziggy/third-party/julia-1.8
+.4/bin:/home/ziggy/go/bin:/home/ziggy/.local/bin
+#+END_SRC
+This enormous variable tells the shell
+*what directories contain executables and in what order to search for them.*
+Executables contained within these directories can be called without a path
+specified because the shell will go through each ":" delimited path and attempt
+to append it to the command-name you have called!
+To add a /new path/ to the /PATH/ variable, you need only reassign its value!
+#+BEGIN_SRC console
+$ export PATH=$PATH:/path/to/add
+#+END_SRC
+One important note is that /user/ specified paths should typically be /appended/
+(as opposed to prepended i.e. /PATH=/path/to/add:$PATH/) as we don't want any of
+our own personal executables to take precedence. Remember,
+*PATH is evaluated from left to right.* If we were to put our executable /run/
+at the front of /PATH/, if there were a critical executable on our system also
+named /run/, or silly program would be ran /first/.
+
+One final note, in our example we have exported an environment variable but as
+many are probably aware, simply exporting an environment variable will not cause
+it to /persist/. In order to have our /PATH/ continue to have this amendment
+added across shell session (i.e. after closing and opening a new shell), you
+will need to add this command to your shell configuration file
+(.bashrc, .zshrc, etc).
+
+**** Amending the Makefile to /install/ software
+Very often in the wild you will encounter software on the internet which gives
+the following instructions for their installation:
+
+#+BEGIN_SRC console
+make install clean
+#+END_SRC
+
+In fact, there is an entire operating system whose software management
+architecture is based on maintaining a set of in /PATH/ directories full
+of Makefiles (the port system of FreeBSD).\\
+
+If you would like this functionality, first place a /local/ directory
+from which you are comfortable executing binaries from in /PATH/. A very
+common choice for this is a local //bin/ directory, /$HOME/bin/ for instance.
+Once that directory is in /PATH/, simply copying your binary to that directory
+would allow you to call it as a normal executable from shell.
+
+*filename*: =Makefile=
+#+BEGIN_SRC makefile
+CC=clang
+CFLAGS=-Wall -Wextra -pedantic -Wconversion \
+			 -Wunreachable-code -Wswitch-enum -Wno-gnu
+EXE=run
+BIN_DIR=$(HOME)/bin
+
+all: build
+
+install: build
+  cp $(EXE) $(BIN_DIR)/$(EXE)
+
+build: main.c
+	$(CC) main.c -o $(EXE) $(CFLAGS)
+
+clean:
+	rm -rf $(EXE)
+#+END_SRC
+
+Of course, a person you want to distribute this software to may not have that
+directory in PATH, or they may not WANT your executable IN that path. This is
+why it is considred *polite* to mark the installation target as /install/.
+We can come back to fancy ways to augment our Makefile to assist in installation
+but odds are the majority of people who care to even receive this Makefile are
+going to understand that they must specify an appropriate /BIN_DIR/.
 
 ** References
 There is an infinite supply of C programming resources
