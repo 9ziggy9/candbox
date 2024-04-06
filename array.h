@@ -81,14 +81,9 @@ Array array_fix_new(ArrayVariant v, int *xs, size_t sz) {
 }
 
 ArrayOpResult array_push(Array *xs, int x) {
-  switch(xs->variant) {
-  case DYNAMIC: return array_dyn_push(xs, x);
-  case FIXED:   return array_fix_push(xs, x);
-  default:
-    TRACE_FUNCTION_NAME;
-    fprintf(stderr, "UNREACHABLE\n");
-    exit(EXIT_FAILURE);
-  }
+  return xs->variant == DYNAMIC
+    ? array_dyn_push(xs, x)
+    : array_fix_push(xs, x);
 }
 
 ArrayOpResult array_dyn_push(Array *xs, int x) {
