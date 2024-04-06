@@ -1,11 +1,11 @@
-#define ARRAY_IMPL // header-only library
+#define ARRAY_IMPL       // header-only library
 #include "array.h"
+#include "test.h"
 
 int main(void) {
-  Array xs = ARRAY_INIT(((int []){1, 2, 3, 4, 5}))
-  array_print(&xs);
-  Array ys = ARRAY_NEW(10)
-  array_print(&ys);
-
+  TEST_ARRAY_INIT(DYNAMIC);
+  TEST_ARRAY_INIT(FIXED);
+  TEST_ARRAY_NEW(DYNAMIC);
+  TEST_ARRAY_NEW(FIXED);
   return 0;
 }

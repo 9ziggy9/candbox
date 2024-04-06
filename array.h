@@ -2,25 +2,36 @@
 #define ARRAY_H_
 #include "log.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-typedef enum { SUCCESS = 0, FAILURE } ArrayOpResult;
+typedef enum { SUCCESS, FAILURE } ArrayOpResult;
+typedef enum { FIXED, DYNAMIC } ArrayVariant;
+
 typedef struct {
   int *  elems;
   size_t cap;
   size_t length;
+  ArrayVariant variant;
 } Array;
 
-#define __ARRAY_EXTRACT_SIZE__(xs) xs, sizeof(xs) / sizeof(xs[0])
-#define __ARRAY_BIND_SIZE__(sz)    ((int [sz]){0}), sz
+#define __ARRAY_EXTRACT_SIZE__(XS) XS, sizeof(XS) / sizeof(XS[0])
+#define __ARRAY_STACK_INJECT__(SZ) (int [SZ]){0}, SZ
 
-#define ARRAY_INIT(xs) array_init(__ARRAY_EXTRACT_SIZE__(xs));
-Array array_init(int *, size_t);
+#define ARRAY_INIT(V, XS) array_init(V, __ARRAY_EXTRACT_SIZE__(XS));
+Array array_init(ArrayVariant, int *, size_t);
 
-#define ARRAY_NEW(sz) array_new(__ARRAY_BIND_SIZE__(sz));
-Array array_new(int *, size_t);
+#define ARRAY_NEW(V, SZ) array_new(V, __ARRAY_STACK_INJECT__(SZ));
+Array array_new(ArrayVariant, int *, size_t);
 
 void array_log(const Array *);
 ArrayOpResult array_push(Array *, int);
+ArrayOpResult array_fix_push(Array *, int);
+ArrayOpResult array_dyn_push(Array *, int);
+
+Array array_dyn_init(ArrayVariant, int *, size_t);
+Array array_fix_init(ArrayVariant, int *, size_t);
+Array array_dyn_new (ArrayVariant, size_t);
+Array array_fix_new (ArrayVariant, int *, size_t);
 
 #ifdef ARRAY_IMPL
 void array_print(const Array *xs) {
@@ -34,18 +45,67 @@ void array_print(const Array *xs) {
   printf(" }\n");
 }
 
-Array array_new(int *xs, size_t sz) {
-  return (Array) { .cap = sz, .length = 0, .elems = xs };
+Array array_init(ArrayVariant v, int *xs, size_t sz) {
+  return v == DYNAMIC
+    ? array_dyn_init(v, xs, sz)
+    : array_fix_init(v, xs, sz);
 }
 
-Array array_init(int *xs, size_t sz) {
-  return (Array) { .cap = sz, .length = sz, .elems = xs };
+Array array_new(ArrayVariant v, int *xs, size_t sz) {
+  return v == DYNAMIC
+    ? array_dyn_new(v, sz)
+    : array_fix_new(v, xs, sz);
+}
+
+Array array_dyn_init(ArrayVariant v, int *xs, size_t sz) {
+  int *ys =  (int *) malloc(sizeof(int) * sz);
+  for (size_t n = 0; n < sz; n++) ys[n] = xs[n];
+  return (Array)
+    { .cap = sz, .length = sz, .elems = ys, .variant = v };
+}
+
+Array array_dyn_new(ArrayVariant v, size_t sz) {
+  int *xs =  (int *) calloc(sizeof(int) * sz, 0);
+  return (Array)
+    { .cap = sz, .length = 0, .elems = xs, .variant = v};
+}
+
+Array array_fix_init(ArrayVariant v, int *xs, size_t sz) {
+  return (Array)
+    { .cap = sz, .length = sz, .elems = xs, .variant = v };
+}
+
+Array array_fix_new(ArrayVariant v, int *xs, size_t sz) {
+  return (Array)
+    { .cap = sz, .length = 0, .elems = xs, .variant = v };
 }
 
 ArrayOpResult array_push(Array *xs, int x) {
-  if (xs->length >= xs->cap) return FAILURE;
+  switch(xs->variant) {
+  case DYNAMIC: return array_dyn_push(xs, x);
+  case FIXED:   return array_fix_push(xs, x);
+  default:
+    TRACE_FUNCTION_NAME;
+    fprintf(stderr, "UNREACHABLE\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
+ArrayOpResult array_dyn_push(Array *xs, int x) {
+  if (xs->variant != DYNAMIC) return FAILURE;
+  if (xs->length == xs->cap) {
+    xs->elems = (int *) realloc(xs->elems, 2 * (sizeof(int)) * xs->cap);
+  }
   xs->elems[xs->length++] = x;
   return SUCCESS;
 }
+
+ArrayOpResult array_fix_push(Array *xs, int x) {
+  if (xs->length >= xs->cap || xs->variant != FIXED)
+    return FAILURE;
+  xs->elems[xs->length++] = x;
+  return SUCCESS;
+}
+
 #endif // ARRAY_IMPL
 #endif // ARRAY_H_
