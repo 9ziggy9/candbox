@@ -1,7 +1,7 @@
+#+OPTIONS: broken-links:t
 #+TITLE: Intro to C for High-Level 'Grammers
 #+AUTHOR: 9ziggy9
-#+OPTIONS: broken-links:t
-* Notes on Low-Level Programming for High-Level Engineers AKA C :TOC_4:
+* Contents :TOC_4:
   - [[#disclaimer][DISCLAIMER]]
   - [[#preliminaries][Preliminaries]]
     - [[#wtf-do-i-need-to-install][WTF do I need to install?]]

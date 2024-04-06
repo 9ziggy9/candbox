@@ -17,3 +17,6 @@ main: main.c
 
 clean:
 	rm -rf $(EXE) *.o *.i
+
+git:
+	git add . && git commit -m "automated push" && git push
