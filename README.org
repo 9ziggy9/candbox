@@ -238,8 +238,7 @@ but at least its Thu Apr 4 01
 That's enough for now, we're actually ready to start a C project.
 *** Building "hello, world!"
 Here is a boilerpalte Makefile:
-#+NAME: Makefile
-#+BEGIN_SRC makefile
+#+BEGIN_SRC makefile :var NAME=FILE:REFERENCE
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
 			 -Wunreachable-code -Wswitch-enum -Wno-gnu
