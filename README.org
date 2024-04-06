@@ -356,7 +356,7 @@ You see, when we run
 $ ./run
 #+END_SRC
 The operating system transforms the relative path /./run/ into an absolute path
-that may look something like: //home/ziggy/src/my_app/run/ \\
+that may look something like: =/home/ziggy/src/my_app/run= \\
 In fact, this has to be done for ALL executables.\\
 So why is it that some utilities on your machine like /ls/ or /echo/ can be
 called without this specification? The answer is through an
@@ -380,7 +380,7 @@ To add a /new path/ to the /PATH/ variable, you need only reassign its value!
 $ export PATH=$PATH:/path/to/add
 #+END_SRC
 One important note is that /user/ specified paths should typically be /appended/
-(as opposed to prepended i.e. /PATH=/path/to/add:$PATH/) as we don't want any of
+(as opposed to prepended i.e. =PATH=/path/to/add:$PATH=) as we don't want any of
 our own personal executables to take precedence. Remember,
 *PATH is evaluated from left to right.* If we were to put our executable /run/
 at the front of /PATH/, if there were a critical executable on our system also
@@ -407,7 +407,7 @@ of Makefiles (the port system of FreeBSD).\\
 
 If you would like this functionality, first place a /local/ directory
 from which you are comfortable executing binaries from in /PATH/. A very
-common choice for this is a local //bin/ directory, /$HOME/bin/ for instance.
+common choice for this is a local =/bin= directory, =$HOME/bin= for instance.
 Once that directory is in /PATH/, simply copying your binary to that directory
 would allow you to call it as a normal executable from shell.
 
