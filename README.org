@@ -240,8 +240,8 @@ but at least its Thu Apr 4 01
 That's enough for now, we're actually ready to start a C project.
 *** Building a C project
 
-Here is a boilerplate Makefile:
-#+NAME: test
+Here comes some boilerplate.
+/filename: Makefile/
 #+BEGIN_SRC makefile
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
@@ -256,7 +256,7 @@ clean:
 #+END_SRC
 
 And at last, perhaps the simplest C program imaginable:
-#+CAPTION: main.c
+/filename: main.c/
 #+BEGIN_SRC c
 int main(void) {
   return 0;
