@@ -15,7 +15,7 @@ typedef enum { FIXED, DYNAMIC } ArrVariant;
     : __ARR_GROW_RATE__ * C                                                   \
 
 #define ARRAY(T) struct {                                                     \
-  T * elems;                                                                  \
+  T *  elems;                                                                 \
   size_t cap;                                                                 \
   size_t len;                                                                 \
   ArrVariant variant;                                                         \
@@ -52,6 +52,8 @@ typedef enum { FIXED, DYNAMIC } ArrVariant;
     (XS)->len += (YS)->len;                                                   \
   } while(0);                                                                 \
 
+#define FOR_EACH(X, XS, FN)                                                   \
+
 #define ARRAY_INIT(V, C)                                                      \
   { .elems = NULL, .cap = C, .len = V == FIXED ? C : 0, .variant = V }        \
 
@@ -60,6 +62,7 @@ typedef enum { FIXED, DYNAMIC } ArrVariant;
 /*
 
   TODO: ARRAY_FROM()
+  TODO: FOR_EACH(), MAP(), FILTER()
   TODO: error checking in general
 
 */
