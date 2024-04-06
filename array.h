@@ -94,7 +94,9 @@ ArrayOpResult array_push(Array *xs, int x) {
 ArrayOpResult array_dyn_push(Array *xs, int x) {
   if (xs->variant != DYNAMIC) return FAILURE;
   if (xs->length == xs->cap) {
-    xs->elems = (int *) realloc(xs->elems, 2 * (sizeof(int)) * xs->cap);
+    xs->cap *= 2;
+    xs->elems = (int *)
+      realloc(xs->elems, (sizeof(int)) * xs->cap);
   }
   xs->elems[xs->length++] = x;
   return SUCCESS;
