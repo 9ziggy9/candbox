@@ -256,7 +256,7 @@ clean:
 #+END_SRC
 
 And at last, perhaps the simplest C program imaginable:
-#+CAPTION: main.c
+#+TITLE: main.c
 #+BEGIN_SRC c
 int main(void) {
   return 0;
