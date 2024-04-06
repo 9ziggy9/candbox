@@ -241,7 +241,7 @@ That's enough for now, we're actually ready to start a C project.
 *** Building a C project
 
 Here is a boilerplate Makefile:
-#+Title: Makefile
+#+NAME: test
 #+BEGIN_SRC makefile
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
