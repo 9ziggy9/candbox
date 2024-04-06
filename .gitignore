@@ -4,3 +4,5 @@ run
 probe/
 main.i
 main.i
+./test
+./test.c
