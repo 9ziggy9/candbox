@@ -13,9 +13,10 @@
       - [[#examining-the-makefile][Examining the Makefile]]
       - [[#the-path-variable-aka-whats-with--][The /PATH/ variable aka what's with "./" ???]]
       - [[#amending-the-makefile-to-install-software][Amending the Makefile to /install/ software]]
-- [[#c-is-what-it-is-and-it-isnt-what-it-isnt][C is what it is and it /isn't what it isn't/]]
+- [[#lets-get-started][Let's get started!]]
     - [[#c-is-weakly-typed][C is *weakly* typed]]
     - [[#hello-world-finally][hello world! (finally)]]
+    - [[#pointers-string-literals-and-format-specifiers][POINTERS: string literals and format specifiers]]
 - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -441,7 +442,7 @@ We can come back to fancy ways to augment our Makefile to assist in installation
 but odds are the majority of people who care to even receive this Makefile are
 going to understand that they must specify an appropriate /BIN_DIR/.
 
-* C is what it is and it /isn't what it isn't/
+* Let's get started!
 *** C is *weakly* typed
 In C, only a small set of /primitive/ data types carry any actual /semantics/.
 For instance, declaring a /variable/ as /float/ informs the compiler how it
@@ -494,15 +495,159 @@ int main(void) {
 }
 #+END_SRC
 The function /printf()/ is provided by the /inclusion/ of the /stdio.h/ /header/
-file.
+file.\\
+
 A header /exposes/ the /function prototypes/ (C's notion of an /interface/) of
 an often (but not always) pre-compiled library (called an /object/). If all that
 if given to you is the /prototype/ of /printf()/, how then can this compile?
 Well, /stdio/ is a part of the C /standard library/, and your compiler is nice
 enough to /link/ the implementation /objects/ for you. \\
+
 /printf()/ does not automatically add a new line. Hence the additional `\n`.\\
+
 As previously discussed, we return 0 to indicate the program terminated
-successfullly.
+successfullly. \\
+*** POINTERS: string literals and format specifiers
+C has string literals but they come with some things to keep in mind. First,
+as you are probably aware, a string is actually an array of characters. How
+those characters are encoded can vary language to language but in C the /char/
+type corresponds to good ol' fashioned ASCII.
+
+#+BEGIN_SRC c
+#include <stdio.h>
+
+int main(void) {
+  char *str = "hello, world!";
+  printf("%s\n", str);
+  return 0;
+}
+#+END_SRC
+
+What's with the \*?
+That, dear hearts, /char \*/ declares the /str/ variable as a *pointer*
+to a /char/.\\
+
+So what is this pointer thing? Well, a string is a sequence of bytes
+(/char/ is 8-bit) stored in memory. Your CPU simply *must* know where in the
+hell the sequence of bytes *starts* if it is ever to iterate over it. If it
+cannot iterate over it, it simply *cannot* display it.\\
+
+/A pointer is stores a memory address/. On your
+machine, it is likely a 64-bit unsigned integer. Why? Because your memory
+addresses, where the data actually lives, are /labeled/ with 64-bit unsigned
+integers. So, to be more precise,\\
+
+#+BEGIN_QUOTE
+a pointer is just a variable that stores a memory address, which is just a number
+#+END_QUOTE
+
+Let's pretend for a moment that we're on an 16-bit machine for simplicity,
+it's memory addresses are 16-bit unsigned integers
+(we always represent pointers) in hex. This is what your string would look like
+in memory:
+#+BEGIN_SRC
+0x0006: 'h'
+0x0007: 'e'
+0x0008: 'l'
+0x0009: 'l'
+0x000A: 'o'
+0x000B: ' '
+0x000C: 'w'
+0x000D: 'o'
+0x000E: 'r'
+0x000F: 'l'
+0x0010: 'd'
+0x0011: '\n'
+0x0012: '\0'
+0x0013: 0x0006
+#+END_SRC
+Of course, those characters I have placed, /'h'/ and so forth, are actually
+numbers themselves, the ASCII character code of /'h'/ and so forther. i.e.,
+#+BEGIN_SRC
+0x0000: 0x0068
+#+END_SRC
+Let's direct our attention to the very last two entries here:
+#+BEGIN_SRC
+0x0012: '\0'
+0x0013: 0x0006
+#+END_SRC
+The very last one, well, that's your pointer.
+#+BEGIN_QUOTE
+It is absolutely critical to understand that a pointer is itself a variable*
+which is stored in memory! It's *value* is a *memory address*!
+#+END_QUOTE
+Do you see how our pointer contains the memory address where 'h' is stored?\\
+
+Okay, so what's the deal with /0x0012/? Well, that is what is known as the
+/null terminator/, it is a special non-printable character that is used to
+indicate the end of a string! We will show why this is done, and how to utilize
+this fact in due course (indeed /printf()/ itself is leveraging it),
+but I would like to mention that the compiler is
+going to add this character by default for *string literals*, i.e. it has been
+added because you /defined/ /str/ as pointing to /"hello, world"/. The key point
+here is the use of double quotes, that is what we mean by /string literal/.\\
+
+These outputs I have given are what are sometimes known as "hex dumps", and they
+are a way of diagramming the state of memory as it physically exists. A few
+notes on that.\\
+
+Most hexdumps are formatted more like this
+(here is an actual segement of a hexdump from our compiled program):
+  #+BEGIN_SRC
+00002000: 0100 0200 6865 6c6c 6f2c 2077 6f72 6c64  ....hello, world
+00002010: 2100 2573 0a00 0000 011b 033b 2400 0000  !.%s.......;$...
+  #+END_SRC
+  The left column is the memory address. The right column prints any values
+  which just so happen to be printable characters.\\
+
+  It should be noted that not all memory addresses are
+  actually shown, it is up to the reader to understand that, say the byte 0x68
+  (corresponding to the letter 'h') corresponds to the memory address
+  0x00002005 (use your finger and count to it). Do you see the 0x00 immediately
+  following '!'? If you look at the right printout, you see it is non-printable.
+  That corresponds to our '\0' (null terminator). What follows that is what is 
+  our /format string/ which contains what we will come to know as a
+  /format specifier/ (the "%s").\\
+
+  *But where is the pointer*? It is stored somewhere in this /enormous/ hexdump
+  (it's 1033 memory addresses lol).
+  I promise you it is in there,
+  but the thing is, real hexdumps are always enormous despite how small
+  our source code is. The reason why is, this is not just a /raw binary/ format,
+  I mean, this is certainly raw binary, but it has been embellished with
+  additional information that the /operating system/ (namely the /kernel/) uses
+  at runtime to begin execution. In actuality, the pointer is defined *very far*
+  *away* from the string literal, and the reason is that
+  #+BEGIN_QUOTE
+  string literals are stored in an unmodifiable section
+  of memory called /static memory/!
+  #+END_QUOTE
+  In the future, we may have opportunity to look at the build step of the
+  toolchain just before we are turned into /machine code/, this is where we
+  exist in an /intermediate/ language called /assembler/. In this format, it is
+  very clear that string literals are stored in a very different section
+  than /stack allocated/ variables. But this detail need not concern us for now,
+  this is already *tl;dr*.\\
+
+  *tl;dr*: For the interested reader, you can actually compile a program
+  into /raw binary/ (which will of course be rejected by the kernel if you
+  were to attempt to run it). This process involves telling the compiler
+  that standard libraries may not be implemented, compiling to /object/ and then
+  utilizing a custom /linker/ to only output the raw binary. \\
+
+  A little bit easier thing to do would be to compile to so-called /.COM/ file,
+  which was the very simple (and hilariously dangerous and exploitable)
+  headerless binary format of old DOS machines. Incidentally, the /.COM/ format
+  is utilized by x86 processors in the boot procedure, before the system hands
+  off control to the operating system init procedure.\\
+
+  The modern practice of writing software which compiles to /.COM/ files
+  to be ran in this so called /real-mode/ is often
+  called /boot sector programming/.\\
+
+  In any case, a popular tool which can help you to explore these different
+  formats (typically used to examine assembler) is the entirely online
+  application [[https://godbolt.org/]].
 
 * References
 There is an infinite supply of C programming resources
