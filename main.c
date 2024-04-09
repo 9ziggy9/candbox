@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#define LIST_IMPL
+#include "list.h"
 
 #define PRINT_BINARY(n)                                    \
   do {                                                     \
@@ -37,6 +39,7 @@ RGBA rgba_from_hex(uint32_t hex) {
 }
 
 int main(void) {
-  RGBA color = rgba_from_hex(0xFFFFFFFF);
+  List l = LIST_CREATE();
+  LIST_APPEND(&l, LIST_NODE_CREATE(int, 1));
   return 0;
 }
