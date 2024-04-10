@@ -1,3 +1,4 @@
+#define LIB_IMPL
 #include "lib.h"
 
 int main(void) {
