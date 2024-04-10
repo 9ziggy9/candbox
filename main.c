@@ -40,10 +40,11 @@ int main(void) {
     TODO: implement output_buffer which keeps a line number
     (analogous to cursor position) and stores input buffer output
     in a char[MAX_LINES][LEN_INPUT_BUFFER] (an array of strings)
+
+    ncurses defines KEY_BACKSPACE, implement deleting of characters.
   */
 
   #define KEY_ESC 27
-  // ncurses defines KEY_BACKSPACE
   while((ch = wgetch(w_in)) != KEY_ESC) {
     if (ch == '\n') {
       mvwprintw(w_out, 1, 1, "%s", input_buffer);
