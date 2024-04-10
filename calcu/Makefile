@@ -7,6 +7,9 @@ LIBS=-lncurses -lm
 
 all: main
 
+parse: parse_test.c
+	$(CC) $(CFLAGS) $< -o ./test $(LIBS)
+
 main: main.c
 	$(CC) $(CFLAGS) main.c -o $(EXE) $(LIBS)
 

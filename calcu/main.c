@@ -1,28 +1,26 @@
+#define PARSE_IMPL
+#include "parse.h"
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <math.h>
 
 void ui_init(void);
 static void panic_null_win(WINDOW *);
-static void render_screen(WINDOW *, WINDOW *);
+static void refresh_screen(WINDOW *, WINDOW *);
 static void clear_input(WINDOW *);
 static void clear_output(WINDOW *);
-static char *sanitize_input(char *);
-
-typedef struct {
-  int   *xs;  // data points
-  size_t sp;  // index of top data (think stack pointer)
-  size_t cap; // (sp > cap) => stack overflow
-} EvalStack;
-void push(EvalStack *, int);
-int pop(EvalStack *);
-int eval_expr(EvalStack *, char *);
 
 #define INPUT_ORIGIN 1, 1
 #define LEN_INPUT_BUFFER 256
+
+void exit_clean(int exit_code, void *args) {
+  WINDOW **ws = (WINDOW **) args;
+  delwin(ws[0]);
+  delwin(ws[1]);
+  endwin();
+  log_crash_type((eval_crash_t) exit_code);
+}
 
 int main(void) {
   ui_init();
@@ -38,8 +36,12 @@ int main(void) {
   WINDOW *w_in = newwin(3, width_screen - 2, height_screen - 4, 1);
   panic_null_win(w_in);
   box(w_in, 0, 0);
+  mvwprintw(w_in, INPUT_ORIGIN, "> ");
 
-  render_screen(w_out, w_in);
+  // register windows to be cleaned up on abrupt exits
+  on_exit(exit_clean, (WINDOW *[]){w_out, w_in});
+
+  refresh_screen(w_out, w_in);
 
   char input_buffer[LEN_INPUT_BUFFER] = {0};
   size_t input_pos = 0;
@@ -48,12 +50,13 @@ int main(void) {
     if (ch == '\n') {
       clear_output(w_out);
       mvwprintw(w_out, 1, 1, ">> %s", input_buffer);
-      EvalStack stack;
-      stack.cap = 256;
-      stack.sp = 0;
-      stack.xs = (int *) malloc(sizeof(int) * stack.cap);
-      mvwprintw(w_out, 2, 1, "> %d",
-                eval_expr(&stack, sanitize_input(input_buffer)));
+
+      EvalStack ev_stack;
+      ev_stack.cap = 100;
+      ev_stack.sp = 0;
+      ev_stack.xs = malloc(ev_stack.cap * sizeof(double));
+      mvwprintw(w_out, 2, 1, "> %.2lf", eval_expr(&ev_stack, input_buffer));
+
       memset(input_buffer, 0, LEN_INPUT_BUFFER);
       input_pos = 0;
       wrefresh(w_out);
@@ -71,61 +74,6 @@ int main(void) {
   return 0;
 }
 
-static char *sanitize_input(char *in) {
-  char *out = (char *) malloc(strlen(in) + 1);
-  char *pout = out;
-  for (char *c = in; *c != '\0'; c++) {
-    if (isdigit(*c) || strchr("+-*/", *c)) *pout++ = *c;
-  }
-  *pout = '\0';
-  return out;
-}
-
-static void guard_stack_overflow(size_t sz, size_t cap) {
-  if (sz >= cap) {
-    fprintf(stderr, "STACK OVERFLOW!!!!\n");
-    exit(EXIT_FAILURE);
-  }
-}
-
-static void guard_stack_underflow(size_t sz) {
-  if (sz == 0) {
-    fprintf(stderr, "STACK UNDERFLOW!!!!\n");
-    exit(EXIT_FAILURE);
-  }
-}
-
-void push(EvalStack *s, int x) {
-  guard_stack_overflow(s->sp, s->cap);
-  s->xs[s->sp++] = x;
-}
-
-int pop(EvalStack *s) {
-  guard_stack_underflow(s->sp);
-  return s->xs[s->sp++];
-}
-
-int eval_expr(EvalStack *s, char *expr) {
-  while(*expr != '\0') {
-    switch(*expr) {
-    case '+': push(s, pop(s) + pop(s)); break;
-    case '-': push(s, pop(s) - pop(s)); break;
-    case '*': push(s, pop(s) * pop(s)); break;
-    case '/': push(s, pop(s) / pop(s)); break; // danger :D
-    default: {
-      if (isdigit(*expr)) {
-        int x = 0;
-        size_t digit = 0;
-        while(isdigit(*expr)) x += pow(10, digit) * atoi(expr++);
-        push(s, x);
-      }
-    }
-    }
-    expr++;
-  }
-  return s->xs[0];
-}
-
 static void panic_null_win(WINDOW *w) {
   if (w == NULL) {
     fprintf(stderr, "couldn't alloc win resources.\n");
@@ -133,7 +81,7 @@ static void panic_null_win(WINDOW *w) {
   }
 }
 
-static void render_screen(WINDOW *w_out, WINDOW *w_in) {
+static void refresh_screen(WINDOW *w_out, WINDOW *w_in) {
   refresh();
   clear_output(w_out);
   clear_input(w_in);
@@ -146,9 +94,8 @@ static void clear_output(WINDOW *w) {
 }
 
 static void clear_input(WINDOW *w) {
-  werase(w);    // Clear input window
-  box(w, 0, 0); // Redraw border for input window
-  mvwprintw(w, INPUT_ORIGIN, "> "); // Print prompt
+  wmove(w, 1, 3);
+  wclrtoeol(w);
   wrefresh(w);
 }
 
