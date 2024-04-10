@@ -1,6 +1,5 @@
 #include "lib.h"
 
-int main(void) {
+void say_hello(void) {
   hello();
-  return 0;
 }
