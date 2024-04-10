@@ -10,7 +10,10 @@ EXE=./run
 all: main
 
 main: main.c
-	$(CC) $(CFLAGS) main.c -o $(EXE)
+	$(CC) $(CFLAGS) main.c -o $(EXE) -lncurses
+
+term:
+	stty sane
 
 clean:
 	rm $(EXE) *.o *.i *.asm
