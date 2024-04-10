@@ -43,6 +43,7 @@ int main(void) {
   */
 
   #define KEY_ESC 27
+  // ncurses defines KEY_BACKSPACE
   while((ch = wgetch(w_in)) != KEY_ESC) {
     if (ch == '\n') {
       mvwprintw(w_out, 1, 1, "%s", input_buffer);
