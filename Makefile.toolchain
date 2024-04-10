@@ -1,11 +1,32 @@
+# copy/paste code
+# compile to object, and link
+# header-only (define implementation)
+
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
 			 -Wunreachable-code -Wswitch-enum -Wno-gnu
 EXE=./run
 
-pre: main.c
-	$(CC) -E main.c -o main.i
+all: component.o main
 
+main: main.c
+	$(CC) $(CFLAGS) main.c -o $(EXE) component.o
+
+# translation unit
+component.o: component.c
+	$(CC) $(CFLAGS) -c component.c -o component.o
+
+# pre: main.c
+# 	$(CC) -E main.c -o main.i
+
+# asm: main.i
+# 	$(CC) -S main.i -o main.asm
+
+# obj: main.asm
+# 	$(CC) -c main.asm -o main.o
+
+# ld: main.o
+# 	$(CC) main.o -o $(EXE)
 
 clean:
-	rm $(EXE)
+	rm $(EXE) *.o *.i *.asm

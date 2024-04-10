@@ -7,25 +7,10 @@ CFLAGS=-Wall -Wextra -pedantic -Wconversion \
 			 -Wunreachable-code -Wswitch-enum -Wno-gnu
 EXE=./run
 
-all: component.o main
+all: main
 
 main: main.c
-	$(CC) $(CFLAGS) main.c -o $(EXE) component.o
-
-component.o: component.c
-	$(CC) $(CFLAGS) -c component.c -o component.o
-
-# pre: main.c
-# 	$(CC) -E main.c -o main.i
-
-# asm: main.i
-# 	$(CC) -S main.i -o main.asm
-
-# obj: main.asm
-# 	$(CC) -c main.asm -o main.o
-
-# ld: main.o
-# 	$(CC) main.o -o $(EXE)
+	$(CC) $(CFLAGS) main.c -o $(EXE)
 
 clean:
 	rm $(EXE) *.o *.i *.asm
