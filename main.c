@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <unistd.h>
 
 void ui_init(void) {
   initscr();
+  noecho();
   curs_set(1);
 }
+
+#define LEN_INPUT_BUFFER 280
 
 int main(void) {
   ui_init();
@@ -27,9 +31,20 @@ int main(void) {
   wrefresh(w_out);
   wrefresh(w_in);
 
-  getch(); // this will block until a key is pressed
+  int ch;
+  char input_buffer[LEN_INPUT_BUFFER] = {0};
+  size_t cursor_position = 0;
+
+  while((ch = wgetch(w_in)) != 'q') {
+    if (cursor_position < LEN_INPUT_BUFFER) {
+      input_buffer[cursor_position++] = ch;
+    }
+    mvwprintw(w_in, 1, 3, "%s", input_buffer);
+    wrefresh(w_in);
+  }
 
   delwin(w_out);
+  delwin(w_in);
   endwin();
   return 0;
 }
