@@ -18,6 +18,8 @@ typedef enum {
   EXIT_EVAL_BAD_EXPR,
   EXIT_EVAL_UNBALANCED,
 } eval_crash_t;
+void log_eval_crash_type(eval_crash_t);
+#define LOG_CASE_BRK(T) case T: fprintf(stderr, ""#T""); break;
 
 #ifdef PARSE_IMPL
 #include <ctype.h>
@@ -37,22 +39,17 @@ void push(EvalStack *stack, double x) {
   stack->xs[++stack->sp] = x;
 }
 
-void log_crash_type(eval_crash_t exit_code) {
-  if
-  (exit_code >= EXIT_EVAL_STACK_OVERFLOW && exit_code <= EXIT_EVAL_UNBALANCED)
+void log_eval_crash_type(eval_crash_t exit_code) {
+  if (exit_code >= EXIT_EVAL_STACK_OVERFLOW &&
+      exit_code <= EXIT_EVAL_UNBALANCED)
   {
     fprintf(stderr, "FATAL :: %s() :: ", __func__);
     switch(exit_code) {
-    case EXIT_EVAL_STACK_OVERFLOW:
-      fprintf(stderr, "EXIT_EVAL_STACK_OVERFLOW")  ;break;
-    case EXIT_EVAL_STACK_UNDERFLOW:
-      fprintf(stderr, "EXIT_EVAL_STACK_UNDERFLOW") ;break;
-    case EXIT_EVAL_DIV_ZERO:
-      fprintf(stderr, "EXIT_EVAL_DIV_ZERO")        ;break;
-    case EXIT_EVAL_BAD_EXPR:
-      fprintf(stderr, "EXIT_EVAL_BAD_EXPR")        ;break;
-    case EXIT_EVAL_UNBALANCED:
-      fprintf(stderr, "EXIT_EVAL_UNBALANCED")      ;break;
+    LOG_CASE_BRK(EXIT_EVAL_STACK_OVERFLOW);
+    LOG_CASE_BRK(EXIT_EVAL_STACK_UNDERFLOW);
+    LOG_CASE_BRK(EXIT_EVAL_DIV_ZERO);
+    LOG_CASE_BRK(EXIT_EVAL_BAD_EXPR);
+    LOG_CASE_BRK(EXIT_EVAL_UNBALANCED);
     }
     fprintf(stderr, "\n");
   }
