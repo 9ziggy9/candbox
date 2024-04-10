@@ -22,6 +22,7 @@ int main(void) {
 
   WINDOW *w_out = newwin(screen_height - 4, screen_width - 2, 1, 1);
   assert(w_out != NULL && "uh oh newwin() failed.");
+  scrollok(w_out, TRUE);
   box(w_out, 0, 0);
 
   WINDOW *w_in = newwin(3, screen_width - 2, screen_height - 3, 1);
@@ -41,7 +42,8 @@ int main(void) {
     (analogous to cursor position) and stores input buffer output
     in a char[MAX_LINES][LEN_INPUT_BUFFER] (an array of strings)
 
-    ncurses defines KEY_BACKSPACE, implement deleting of characters.
+    TODO: ncurses defines KEY_BACKSPACE, implement deleting of
+    characters.
   */
 
   #define KEY_ESC 27
