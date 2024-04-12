@@ -1,15 +1,23 @@
 #define PARSE_IMPL
 #include "parse.h"
+#include <stdlib.h>
+
+void handle_exit(int exit_code, void *args) {
+  (void) args;
+  log_eval_crash_type((eval_crash_t) exit_code);
+}
 
 int main(void) {
-  EvalStack stack;
-  stack.cap = 100;
-  stack.sp = 0;
-  stack.xs = malloc(stack.cap * sizeof(double));
+  on_exit(handle_exit, NULL);
 
-  char *expr = "24 45 + 42 1000 * +";
-  printf("Result: %.2lf\n", eval_expr(&stack, expr));
+  char *expr = "2 24 * 24 -";
+  RPNStack rpn_stack = parse_expr(expr);
 
-  free(stack.xs);
+  rpn_trace_stack(&rpn_stack);
+  double x = eval_rpn(&rpn_stack, 0);
+  printf("result: %lf\n", x);
+
+  rpn_trace_stack(&rpn_stack);
+
   return 0;
 }

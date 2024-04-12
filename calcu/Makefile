@@ -1,6 +1,6 @@
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
-			 -Wunreachable-code -Wswitch-enum -Wno-gnu \
+			 -Wunreachable-code -Wno-gnu \
 			 -ggdb
 EXE=./calcu
 LIBS=-lncurses -lm
