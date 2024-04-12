@@ -1,7 +1,3 @@
-# copy/paste code
-# compile to object, and link
-# header-only (define implementation)
-
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
 			 -Wunreachable-code -Wswitch-enum -Wno-gnu
