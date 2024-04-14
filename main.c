@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <string.h>
 
-
 void clear_input(WINDOW *);
 void clear_output(WINDOW *);
 
@@ -34,6 +33,7 @@ void cleanup_ncurses(int exit_code, void *args) {
 
 #define LEN_INPUT_BUFFER 280
 
+#ifndef PARSE_TEST
 int main(void) {
   WINDOW *w_out = NULL, *w_in = NULL;
   ui_init();
@@ -98,9 +98,15 @@ int main(void) {
     mvwprintw(w_in, 1, 3, "%s", input_buffer);
     wrefresh(w_in);
   }
-
   return EXIT_SUCCESS;
 }
+#else
+#define PARSE_IMPL
+#include "parse.h"
+int main(void) {
+  hello();
+}
+#endif // PARSE_TEST
 
 void clear_input(WINDOW *w_in) {
   wmove(w_in, 1, 3);

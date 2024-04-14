@@ -1,15 +1,15 @@
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -Wconversion \
 			 -Wunreachable-code -Wswitch-enum -Wno-gnu
-EXE=./run
+EXE=./calcu
 
 all: main
 
 main: main.c
 	$(CC) $(CFLAGS) main.c -o $(EXE) -lncurses
 
-term:
-	stty sane
+parse: main.c
+	$(CC) $(CFLAGS) main.c -o $(EXE) -lncurses -DPARSE_TEST
 
 clean:
 	rm $(EXE) *.o *.i *.asm
