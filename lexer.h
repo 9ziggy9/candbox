@@ -7,7 +7,7 @@
 
 typedef enum { // PEMDAS
   OP_SUB, OP_ADD, OP_MUL, OP_DIV,
-  OPAREN, CPAREN, VALUE
+  OPAREN, CPAREN, VALUE, TERMINATOR,
 } token_kind;
 
 typedef struct { token_kind kind; double value; } Token;
@@ -44,7 +44,19 @@ void token_print_error(error_stream_t e) {
 
 void token_append(TokenStream *stream, Token tk) {
   if (stream->n_tks >= stream->cap) exit(EXIT_STREAM_OVERFLOW);
-  stream->tks[++stream->n_tks] = tk;
+  stream->tks[stream->n_tks++] = tk;
+}
+
+Token next_token(TokenStream *ts) {
+  if (ts->n_tks > 0) {
+    Token tk = ts->tks[0];  // Get the first token in the array
+    ts->tks++;             // Move the array pointer to the next token
+    ts->n_tks--;           // Decrement the count of tokens
+    return tk;
+  }
+  // Return a token that acts as the end-of-stream indicator
+  Token end_token = { .kind = TERMINATOR };
+  return end_token;
 }
 
 TokenStream lex_expr(char *expr) {
@@ -60,7 +72,7 @@ TokenStream lex_expr(char *expr) {
     case '/': token_append(&stream, (Token) { .kind = OP_DIV }); expr++; break;
     case '(': token_append(&stream, (Token) { .kind = OPAREN }); expr++; break;
     case ')': token_append(&stream, (Token) { .kind = CPAREN }); expr++; break;
-    default: {
+    default : {
       if (!isdigit(*expr)) {
         fprintf(stderr, "bad char: %c\n", *expr);
         exit(EXIT_STREAM_INVALID_CHAR); 
@@ -76,8 +88,8 @@ TokenStream lex_expr(char *expr) {
 #define STR_FROM_OP(OP) ""#OP""
 void token_stream_trace(TokenStream *stream) {
   if (stream->n_tks == 0) printf("-- EMPTY STREAM --\n");
-  size_t count = 1;
-  while (count <= stream->n_tks) {
+  size_t count = 0;
+  while (count < stream->n_tks) {
     switch (stream->tks[count].kind) {
     case OP_SUB: printf("[op: %s]", STR_FROM_OP(OP_SUB)); break;
     case OP_MUL: printf("[op: %s]", STR_FROM_OP(OP_MUL)); break;
@@ -90,7 +102,7 @@ void token_stream_trace(TokenStream *stream) {
       break;
     }
     count++;
-    printf(count <= stream->n_tks ? " -> " : "\n");
+    printf(count < stream->n_tks ? " -> " : "\n");
   }
 }
 

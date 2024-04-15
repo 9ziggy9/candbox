@@ -103,6 +103,9 @@ int main(void) {
 #define LEXER_IMPL
 #include "lexer.h"
 
+#define PARSE_IMPL
+#include "parse.h"
+
 void handle_stream_error(int exit_code, void *args) {
   (void) args;
   token_print_error((error_stream_t) exit_code);
@@ -110,8 +113,17 @@ void handle_stream_error(int exit_code, void *args) {
 
 int main(void) {
   on_exit(handle_stream_error, NULL);
-  TokenStream stream = lex_expr("1 + 23 * (4 + 2)");
+
+  char *expr = "2 * 3 + (3 * 4 * (10 / 2))";
+  printf("\nRAW EXPRESSION: %s\n", expr);
+  TokenStream stream = lex_expr(expr);
+
+  printf("\nTOKEN STREAM:\n");
   token_stream_trace(&stream);
+
+  printf("\nABSTRACT SYNTAX TREE:\n");
+  ASTBinaryNode *ast_root = parse_stream(&stream);
+  ast_parse_trace(ast_root, 0);
 }
 
 #endif // PARSE_TEST
