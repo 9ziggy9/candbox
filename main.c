@@ -57,7 +57,6 @@ int main(void) {
   wrefresh(w_out);
   wrefresh(w_in);
 
-
   #define MAX_OUT_LINES 20
   int ch;
   char input_buffer[LEN_INPUT_BUFFER] = {0};
@@ -101,23 +100,19 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 #else
-#define LEX_IMPL
+#define LEXER_IMPL
 #include "lexer.h"
-#define PARSE_IMPL
-#include "parse.h"
-#include <stdlib.h>
-#include <stdio.h>
 
-void handle_exit(int exit_code, void *args) {
+void handle_stream_error(int exit_code, void *args) {
   (void) args;
-  log_eval_crash_type((eval_crash_t) exit_code);
+  token_print_error((error_stream_t) exit_code);
 }
 
 int main(void) {
-  on_exit(handle_exit, NULL);
-  char *expr = "(1 + 21 + 3) * (5 + 72)";
-  TokenStream stream = lex_expr(expr);
-  tkn_trace_stream(&stream);
+  on_exit(handle_stream_error, NULL);
+  printf("Hello, world!\n");
+  TokenStream stream = lex_expr("1 + 23 * (4 + 2)");
+  token_stream_trace(&stream);
 }
 
 #endif // PARSE_TEST

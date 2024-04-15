@@ -1,107 +1,102 @@
-#ifndef LEX_H_
-#define LEX_H_
-#include <stdio.h>
+#ifndef LEXER_H_
+#define LEXER_H_
+
 #include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 
-typedef enum {
-  EXIT_EVAL_STACK_OVERFLOW = 1000,
-  EXIT_EVAL_STACK_UNDERFLOW,
-  EXIT_EVAL_DIV_ZERO,
-  EXIT_EVAL_BAD_EXPR,
-  EXIT_EVAL_UNBALANCED,
-  EXIT_EVAL_ALLOC_FAIL,
-} eval_crash_t;
-void log_eval_crash_type(eval_crash_t);
-#define LOG_CASE_BRK(T) case T: fprintf(stderr, ""#T""); break;
-
-typedef enum {
-  OP_SUB, OP_ADD, OP_DIV, OP_MUL,
-  OP_OPAREN, OP_CPAREN, OPRND,
+typedef enum { // PEMDAS
+  OP_SUB, OP_ADD, OP_MUL, OP_DIV,
+  OPAREN, CPAREN, VALUE
 } token_kind;
 
-typedef struct { token_kind kind; double data; } Token;
+typedef struct { token_kind kind; double value; } Token;
 
+#define MAX_TOKEN_STREAM 256
 typedef struct {
   Token *tks;
-  size_t n_tkns;
+  size_t n_tks;
   size_t cap;
 } TokenStream;
-void       tkn_append(TokenStream *, Token);
-void       tkn_trace_stream(TokenStream *);
+void token_append(TokenStream *, Token);
 TokenStream lex_expr(char *);
+void token_stream_trace(TokenStream *);
 
-#ifdef LEX_IMPL
-#include <ctype.h>
-#include <math.h>
-#include <stdio.h>
+typedef enum {
+  EXIT_STREAM_OVERFLOW = 9000,
+  EXIT_STREAM_ALLOC_FAIL,
+  EXIT_STREAM_INVALID_CHAR,
+} error_stream_t;
+void token_print_error(error_stream_t);
 
-void log_eval_crash_type(eval_crash_t exit_code) {
-  if (exit_code >= EXIT_EVAL_STACK_OVERFLOW &&
-      exit_code <= EXIT_EVAL_ALLOC_FAIL)
-  {
-    fprintf(stderr, "FATAL :: %s() :: ", __func__);
-    switch(exit_code) {
-      LOG_CASE_BRK(EXIT_EVAL_STACK_OVERFLOW);
-      LOG_CASE_BRK(EXIT_EVAL_STACK_UNDERFLOW);
-      LOG_CASE_BRK(EXIT_EVAL_DIV_ZERO);
-      LOG_CASE_BRK(EXIT_EVAL_BAD_EXPR);
-      LOG_CASE_BRK(EXIT_EVAL_UNBALANCED);
-      LOG_CASE_BRK(EXIT_EVAL_ALLOC_FAIL);
+#ifdef LEXER_IMPL
+void token_print_error(error_stream_t e) {
+  if (e >= EXIT_STREAM_OVERFLOW && e <= 9100) {
+    fprintf(stderr, "%s() :: ", __func__);
+    switch (e) {
+    case EXIT_STREAM_OVERFLOW:
+      fprintf(stderr, "STREAM OVERFLOW!!!!\n");
+      break;
+    case EXIT_STREAM_ALLOC_FAIL:
+      fprintf(stderr, "FAILED TO ALLOC STREAM!\n");
+      break;
+    case EXIT_STREAM_INVALID_CHAR:
+      fprintf(stderr, "ENCOUNTERED INVALID CHAR\n");
+      break;
     }
-    fprintf(stderr, "\n");
   }
 }
 
-void tkn_append(TokenStream *stream, Token t) {
-  if (stream->n_tkns >= stream->cap) exit(EXIT_EVAL_STACK_OVERFLOW);
-  stream->tks[++stream->n_tkns] = t;
+void token_append(TokenStream *stream, Token tk) {
+  if (stream->n_tks >= stream->cap) exit(EXIT_STREAM_OVERFLOW);
+  stream->tks[++stream->n_tks] = tk;
 }
 
-#define TKN_STREAM_CAP 256
 TokenStream lex_expr(char *expr) {
-// BEGIN: alloc tkn stream
-  TokenStream stream = { .tks = NULL, .n_tkns = 0, .cap = TKN_STREAM_CAP };
+  TokenStream stream = { .n_tks = 0, .cap = MAX_TOKEN_STREAM, .tks = NULL };
   stream.tks = (Token *) malloc(stream.cap * sizeof(Token));
-  if (stream.tks == NULL) exit(EXIT_EVAL_ALLOC_FAIL);
-// END: alloc tkn stream
+  if (stream.tks == NULL) exit(EXIT_STREAM_ALLOC_FAIL);
   while (*expr != '\0') {
-    while (isspace(*expr)) expr++;
+    if (isspace(*expr)) expr++;
     switch (*expr) {
-    case '+': tkn_append(&stream, (Token) { .kind = OP_ADD });    expr++; break;
-    case '-': tkn_append(&stream, (Token) { .kind = OP_SUB });    expr++; break;
-    case '*': tkn_append(&stream, (Token) { .kind = OP_MUL });    expr++; break;
-    case '/': tkn_append(&stream, (Token) { .kind = OP_DIV });    expr++; break;
-    case '(': tkn_append(&stream, (Token) { .kind = OP_OPAREN }); expr++; break;
-    case ')': tkn_append(&stream, (Token) { .kind = OP_CPAREN }); expr++; break;
+    case '+': token_append(&stream, (Token) { .kind = OP_ADD }); expr++; break;
+    case '-': token_append(&stream, (Token) { .kind = OP_SUB }); expr++; break;
+    case '*': token_append(&stream, (Token) { .kind = OP_MUL }); expr++; break;
+    case '/': token_append(&stream, (Token) { .kind = OP_DIV }); expr++; break;
+    case '(': token_append(&stream, (Token) { .kind = OPAREN }); expr++; break;
+    case ')': token_append(&stream, (Token) { .kind = CPAREN }); expr++; break;
     default: {
-      if (!isdigit(*expr)) exit(EXIT_EVAL_BAD_EXPR);
+      if (!isdigit(*expr)) {
+        fprintf(stderr, "bad char: %c\n", *expr);
+        exit(EXIT_STREAM_INVALID_CHAR); 
+      }
       long x = strtol(expr, &expr, 10);
-      tkn_append(&stream, (Token) { .kind = OPRND, .data = (double) x });
+      token_append(&stream, (Token) { .kind = VALUE, .value = (double) x });
     }
     }
   }
   return stream;
 }
 
-#define STR_FROM_OP(O) ""#O""
-void tkn_trace_stream(TokenStream *stream) {
-  size_t n_tkns = stream->n_tkns;
-  if (n_tkns <= 0) printf("-- EMPTY STREAM --\n");
-  while (n_tkns > 0) {
-    switch (stream->tks[n_tkns].kind) {
-    case OP_SUB:    printf("(op: %s) -> ", STR_FROM_OP(OP_SUB));    break;
-    case OP_ADD:    printf("(op: %s) -> ", STR_FROM_OP(OP_ADD));    break;
-    case OP_MUL:    printf("(op: %s) -> ", STR_FROM_OP(OP_MUL));    break;
-    case OP_DIV:    printf("(op: %s) -> ", STR_FROM_OP(OP_DIV));    break;
-    case OP_OPAREN: printf("(op: %s) -> ", STR_FROM_OP(OP_OPAREN)); break;
-    case OP_CPAREN: printf("(op: %s) -> ", STR_FROM_OP(OP_CPAREN)); break;
-    case OPRND: default:
-      printf("(value: %lf) -> ", stream->tks[n_tkns].data);
+#define STR_FROM_OP(OP) ""#OP""
+void token_stream_trace(TokenStream *stream) {
+  size_t count = stream->n_tks;
+  if (count <= 0) printf("-- EMPTY STREAM --\n");
+  while (count > 0) {
+    switch (stream->tks[count].kind) {
+    case OP_SUB: printf("[op: %s] -> ", STR_FROM_OP(OP_SUB)); break;
+    case OP_MUL: printf("[op: %s] -> ", STR_FROM_OP(OP_MUL)); break;
+    case OP_ADD: printf("[op: %s] -> ", STR_FROM_OP(OP_ADD)); break;
+    case OP_DIV: printf("[op: %s] -> ", STR_FROM_OP(OP_DIV)); break;
+    case OPAREN: printf("[op: %s] -> ", STR_FROM_OP(OPAREN)); break;
+    case CPAREN: printf("[op: %s] -> ", STR_FROM_OP(CPAREN)); break;
+    case VALUE:  printf("[val: %s] -> ", STR_FROM_OP(VALUE)); break;
     }
-    n_tkns--;
+    count--;
   }
   printf("\n");
 }
 
-#endif // LEX_IMPL
-#endif // LEX_H_
+#endif // LEXER_IMPL
+
+#endif // LEXER_H_
