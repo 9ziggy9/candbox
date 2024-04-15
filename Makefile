@@ -9,7 +9,7 @@ main: main.c
 	$(CC) $(CFLAGS) main.c -o $(EXE) -lncurses
 
 parse: main.c
-	$(CC) $(CFLAGS) main.c -o $(EXE) -lncurses -DPARSE_TEST
+	$(CC) $(CFLAGS) main.c -o $(EXE) -lncurses -lm -DPARSE_TEST
 
 clean:
 	rm $(EXE) *.o *.i *.asm

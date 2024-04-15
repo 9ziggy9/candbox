@@ -103,9 +103,21 @@ int main(void) {
 #else
 #define PARSE_IMPL
 #include "parse.h"
-int main(void) {
-  hello();
+#include <stdlib.h>
+#include <stdio.h>
+
+void handle_exit(int exit_code, void *args) {
+  (void) args;
+  log_eval_crash_type((eval_crash_t) exit_code);
 }
+
+int main(void) {
+  on_exit(handle_exit, NULL);
+  char *expr = "(1 + 21 + 3) * (5 + 72)";
+  TokenStack tkn_stack = parse_expr(expr);
+  tkn_trace_stack(&tkn_stack);
+}
+
 #endif // PARSE_TEST
 
 void clear_input(WINDOW *w_in) {
