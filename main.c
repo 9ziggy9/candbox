@@ -101,6 +101,8 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 #else
+#define LEX_IMPL
+#include "lexer.h"
 #define PARSE_IMPL
 #include "parse.h"
 #include <stdlib.h>
@@ -114,8 +116,8 @@ void handle_exit(int exit_code, void *args) {
 int main(void) {
   on_exit(handle_exit, NULL);
   char *expr = "(1 + 21 + 3) * (5 + 72)";
-  TokenStack tkn_stack = parse_expr(expr);
-  tkn_trace_stack(&tkn_stack);
+  TokenStream stream = lex_expr(expr);
+  tkn_trace_stream(&stream);
 }
 
 #endif // PARSE_TEST
