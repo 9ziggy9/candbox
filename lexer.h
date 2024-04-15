@@ -30,19 +30,14 @@ typedef enum {
 void token_print_error(error_stream_t);
 
 #ifdef LEXER_IMPL
+#define LOG_BREAK_ERR(S) case S: fprintf(stderr, ""#S"\n"); break;
 void token_print_error(error_stream_t e) {
   if (e >= EXIT_STREAM_OVERFLOW && e <= 9100) {
     fprintf(stderr, "%s() :: ", __func__);
     switch (e) {
-    case EXIT_STREAM_OVERFLOW:
-      fprintf(stderr, "STREAM OVERFLOW!!!!\n");
-      break;
-    case EXIT_STREAM_ALLOC_FAIL:
-      fprintf(stderr, "FAILED TO ALLOC STREAM!\n");
-      break;
-    case EXIT_STREAM_INVALID_CHAR:
-      fprintf(stderr, "ENCOUNTERED INVALID CHAR\n");
-      break;
+    LOG_BREAK_ERR(EXIT_STREAM_OVERFLOW);
+    LOG_BREAK_ERR(EXIT_STREAM_ALLOC_FAIL);
+    LOG_BREAK_ERR(EXIT_STREAM_INVALID_CHAR);
     }
   }
 }
@@ -95,10 +90,9 @@ void token_stream_trace(TokenStream *stream) {
       break;
     }
     count++;
-    printf(count == stream->n_tks ? "\n" : " -> ");
+    printf(count <= stream->n_tks ? " -> " : "\n");
   }
 }
 
 #endif // LEXER_IMPL
-
 #endif // LEXER_H_
