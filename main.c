@@ -103,8 +103,6 @@ int main(void) {
 #else
 #define LEX_IMPL
 #include "lexer.h"
-#define PARSE_IMPL
-#include "parse.h"
 #include <stdlib.h>
 #include <stdio.h>
 
