@@ -80,21 +80,23 @@ TokenStream lex_expr(char *expr) {
 
 #define STR_FROM_OP(OP) ""#OP""
 void token_stream_trace(TokenStream *stream) {
-  size_t count = stream->n_tks;
-  if (count <= 0) printf("-- EMPTY STREAM --\n");
-  while (count > 0) {
+  if (stream->n_tks == 0) printf("-- EMPTY STREAM --\n");
+  size_t count = 1;
+  while (count <= stream->n_tks) {
     switch (stream->tks[count].kind) {
-    case OP_SUB: printf("[op: %s] -> ", STR_FROM_OP(OP_SUB)); break;
-    case OP_MUL: printf("[op: %s] -> ", STR_FROM_OP(OP_MUL)); break;
-    case OP_ADD: printf("[op: %s] -> ", STR_FROM_OP(OP_ADD)); break;
-    case OP_DIV: printf("[op: %s] -> ", STR_FROM_OP(OP_DIV)); break;
-    case OPAREN: printf("[op: %s] -> ", STR_FROM_OP(OPAREN)); break;
-    case CPAREN: printf("[op: %s] -> ", STR_FROM_OP(CPAREN)); break;
-    case VALUE:  printf("[val: %s] -> ", STR_FROM_OP(VALUE)); break;
+    case OP_SUB: printf("[op: %s]", STR_FROM_OP(OP_SUB)); break;
+    case OP_MUL: printf("[op: %s]", STR_FROM_OP(OP_MUL)); break;
+    case OP_ADD: printf("[op: %s]", STR_FROM_OP(OP_ADD)); break;
+    case OP_DIV: printf("[op: %s]", STR_FROM_OP(OP_DIV)); break;
+    case OPAREN: printf("[op: %s]", STR_FROM_OP(OPAREN)); break;
+    case CPAREN: printf("[op: %s]", STR_FROM_OP(CPAREN)); break;
+    case VALUE:
+      printf("[%s: %lf]", STR_FROM_OP(VALUE), stream->tks[count].value);
+      break;
     }
-    count--;
+    count++;
+    printf(count == stream->n_tks ? "\n" : " -> ");
   }
-  printf("\n");
 }
 
 #endif // LEXER_IMPL

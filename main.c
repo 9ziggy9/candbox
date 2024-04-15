@@ -110,7 +110,6 @@ void handle_stream_error(int exit_code, void *args) {
 
 int main(void) {
   on_exit(handle_stream_error, NULL);
-  printf("Hello, world!\n");
   TokenStream stream = lex_expr("1 + 23 * (4 + 2)");
   token_stream_trace(&stream);
 }
