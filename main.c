@@ -4,6 +4,13 @@
 #include <unistd.h>
 #include <string.h>
 
+#define LEXER_IMPL
+#include "lexer.h"
+#define PARSE_IMPL
+#include "parse.h"
+#define EVAL_IMPL
+#include "eval.h"
+
 void clear_input(WINDOW *);
 void clear_output(WINDOW *);
 
@@ -13,6 +20,10 @@ void ui_init(void) {
   curs_set(1);
   set_escdelay(0); // immediate escape key response
   start_color();
+  init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN,  COLOR_BLACK);
+  init_pair(3, COLOR_CYAN,   COLOR_BLACK);
+  init_pair(4, COLOR_RED,    COLOR_BLUE);
 }
 
 #define EXIT_WIN_ALLOC_FAIL 1000
@@ -69,17 +80,27 @@ int main(void) {
     in a char[MAX_LINES][LEN_INPUT_BUFFER] (an array of strings) */
 
   #define KEY_ESC 27
+  #define MAX_NUM_DIGITS 32
   while((ch = wgetch(w_in)) != KEY_ESC) {
     if (ch == '\n') {
       if (line_p > MAX_OUT_LINES) exit(EXIT_OUT_OVERFLOW);
       clear_output(w_out);
       memcpy(output_buffer[line_p++], input_buffer, LEN_INPUT_BUFFER);
+
+      char result_str[MAX_NUM_DIGITS];
+      TokenStream ts = lex_expr(input_buffer);
+      ASTBinaryNode *ast_root = parse_stream(&ts);
+      sprintf(result_str, "= %lf", eval_ast(ast_root));
+      memcpy(output_buffer[line_p++], result_str, MAX_NUM_DIGITS);
+
       for (size_t y = 0; y < line_p; y++) {
-        init_pair(4, COLOR_RED, COLOR_BLACK);
-        wattron(w_out, COLOR_PAIR(4));
+        if (!(y % 2)) wattron(w_out, COLOR_PAIR(1));
+        else wattron(w_out, COLOR_PAIR(2));
         mvwprintw(w_out, (int) (1 + y), 1, "%s", output_buffer[y]);
-        wattroff(w_out, COLOR_PAIR(4));
+        wattroff(w_out, COLOR_PAIR(1));
+        wattroff(w_out, COLOR_PAIR(2));
       }
+
       memset(input_buffer, 0, LEN_INPUT_BUFFER);
       cursor_p = 0;
       clear_input(w_in);
@@ -99,15 +120,9 @@ int main(void) {
   }
   return EXIT_SUCCESS;
 }
+
 #else
-#define LEXER_IMPL
-#include "lexer.h"
 
-#define PARSE_IMPL
-#include "parse.h"
-
-
-void ast_parse_trace_vert(ASTBinaryNode *, int, int);
 void handle_stream_error(int exit_code, void *args) {
   (void) args;
   token_print_error((error_stream_t) exit_code);
@@ -127,6 +142,7 @@ int main(void) {
   ASTBinaryNode *ast_root = parse_stream(&stream);
   ast_parse_trace(ast_root, 0);
 
+  printf("\nRESULT: %lf\n", eval_ast(ast_root));
   return EXIT_SUCCESS;
 }
 

@@ -100,11 +100,14 @@ void token_stream_trace(TokenStream *stream) {
     case VALUE:
       printf("[%s: %lf]", STR_FROM_OP(VALUE), stream->tks[count].value);
       break;
+    case TERMINATOR: break;
     }
     count++;
     printf(count < stream->n_tks ? " -> " : "\n");
   }
 }
+
+(35 * (1 + 3 + 4) ) / (100 + (3 / 2))
 
 #endif // LEXER_IMPL
 #endif // LEXER_H_
