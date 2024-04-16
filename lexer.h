@@ -5,12 +5,16 @@
 #include <ctype.h>
 #include <string.h>
 
-typedef enum { // PEMDAS
+typedef enum {
   OP_SUB, OP_ADD, OP_MUL, OP_DIV,
-  OPAREN, CPAREN, VALUE, TERMINATOR,
+  OPAREN, CPAREN,
+  NUMERIC_I, NUMERIC_F,
+  TERMINATOR,
 } token_kind;
 
-typedef struct { token_kind kind; double value; } Token;
+typedef union { long ival; double fval; } ValueNumeric ;
+
+typedef struct { token_kind kind; ValueNumeric value; } Token;
 
 #define MAX_TOKEN_STREAM 256
 typedef struct {
@@ -77,8 +81,20 @@ TokenStream lex_expr(char *expr) {
         fprintf(stderr, "bad char: %c\n", *expr);
         exit(EXIT_STREAM_INVALID_CHAR); 
       }
-      long x = strtol(expr, &expr, 10);
-      token_append(&stream, (Token) { .kind = VALUE, .value = (double) x });
+
+      char *expr_end; 
+      long x = strtol(expr, &expr_end, 10); 
+
+      // REFACTOR with ternaries I think
+      if (*expr_end == '.') token_append(&stream, (Token) {
+            .kind = NUMERIC_F,
+            .value.fval = strtod(expr, &expr_end),
+          });
+      else token_append(&stream, (Token) {
+            .kind = NUMERIC_I,
+            .value.ival = x
+          });
+      expr = expr_end; 
     }
     }
   }
@@ -97,8 +113,13 @@ void token_stream_trace(TokenStream *stream) {
     case OP_DIV: printf("[op: %s]", STR_FROM_OP(OP_DIV)); break;
     case OPAREN: printf("[op: %s]", STR_FROM_OP(OPAREN)); break;
     case CPAREN: printf("[op: %s]", STR_FROM_OP(CPAREN)); break;
-    case VALUE:
-      printf("[%s: %lf]", STR_FROM_OP(VALUE), stream->tks[count].value);
+    case NUMERIC_F:
+      printf("[%s: %lf]",
+             STR_FROM_OP(NUMERIC_F), stream->tks[count].value.fval);
+      break;
+    case NUMERIC_I:
+      printf("[%s: %ld]",
+             STR_FROM_OP(NUMERIC_I), stream->tks[count].value.ival);
       break;
     case TERMINATOR: break;
     }

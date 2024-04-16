@@ -63,7 +63,7 @@ static int precedence(token_kind op) {
   switch(op) {
   case OP_MUL: case OP_DIV: return 2;
   case OP_ADD: case OP_SUB: return 1;
-  case CPAREN: case OPAREN: case TERMINATOR: case VALUE:
+  case CPAREN: case OPAREN: case TERMINATOR: case NUMERIC_F:
   default: return 0;
   }
 }
@@ -87,8 +87,9 @@ ASTBinaryNode* parse_stream(TokenStream *ts) {
   Token tkn;
   while ((tkn = next_token(ts)).kind != TERMINATOR) {
     switch (tkn.kind) {
-    case VALUE:
-      node_stack[node_sp++] = ast_node_init(VALUE, tkn.value, NULL, NULL);
+    case NUMERIC_F:
+      node_stack[node_sp++] = ast_node_init(NUMERIC_F,
+                                            tkn.value.fval, NULL, NULL);
       break;
     case OPAREN: op_push(&op_stack, tkn); break;
     case CPAREN:
@@ -138,7 +139,7 @@ void ast_parse_trace(ASTBinaryNode *node, int depth) {
   }
 
   switch (node->kind) {
-  case VALUE: printf("%.2f\n", node->value); break;
+  case NUMERIC_F: printf("%.2f\n", node->value); break;
   case OP_ADD: printf("+\n"); break;
   case OP_SUB: printf("-\n"); break;
   case OP_MUL: printf("*\n"); break;

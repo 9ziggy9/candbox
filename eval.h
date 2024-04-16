@@ -8,7 +8,7 @@ double eval_ast(ASTBinaryNode *);
 
 #ifdef EVAL_IMPL
 double eval_ast(ASTBinaryNode *node) {
-  if (node->kind == VALUE) {
+  if (node->kind == NUMERIC_F) {
     return node->value;
   } else {
     double lhs = eval_ast(node->lhs);
@@ -18,7 +18,7 @@ double eval_ast(ASTBinaryNode *node) {
     case OP_SUB: return lhs - rhs;
     case OP_MUL: return lhs * rhs;
     case OP_DIV: return lhs / rhs;  // beware of division by zero!
-    case OPAREN: case CPAREN: case VALUE: case TERMINATOR:
+    case OPAREN: case CPAREN: case NUMERIC_F: case TERMINATOR:
     default: exit(EXIT_FAILURE); // implement me
     }
   }
