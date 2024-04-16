@@ -81,17 +81,15 @@ static int is_right_associative(token_kind op) {
 ASTBinaryNode* parse_stream(TokenStream *ts) {
   OpStack op_stack = op_stack_init(MAX_PARSE);
   ASTBinaryNode *node_stack[MAX_PARSE];  // TODO: refactor
-  int node_sp = 0;
+  size_t node_sp = 0;
 
-  Token token;
-  while ((token = next_token(ts)).kind != TERMINATOR) {
-    switch (token.kind) {
+  Token tkn;
+  while ((tkn = next_token(ts)).kind != TERMINATOR) {
+    switch (tkn.kind) {
     case VALUE:
-      node_stack[node_sp++] = ast_node_init(VALUE, token.value, NULL, NULL);
+      node_stack[node_sp++] = ast_node_init(VALUE, tkn.value, NULL, NULL);
       break;
-    case OPAREN:
-      op_push(&op_stack, token);
-      break;
+    case OPAREN: op_push(&op_stack, tkn); break;
     case CPAREN:
       while (op_stack.sp > 0 && op_stack.ops[op_stack.sp - 1].kind != OPAREN)
       {
@@ -107,18 +105,18 @@ ASTBinaryNode* parse_stream(TokenStream *ts) {
     default:  // op_stack
       while (op_stack.sp > 0 &&
              precedence(op_stack.ops[op_stack.sp - 1].kind) >=
-             precedence(token.kind) &&
-             !is_right_associative(token.kind)) {
+             precedence(tkn.kind) &&
+             !is_right_associative(tkn.kind)) {
         ASTBinaryNode *rhs = node_stack[--node_sp];
         ASTBinaryNode *lhs = node_stack[--node_sp];
         Token op = op_pop(&op_stack);
         node_stack[node_sp++] = ast_node_init(op.kind, 0, lhs, rhs);
       }
-      op_push(&op_stack, token);
+      op_push(&op_stack, tkn);
     }
   }
 
-  // Final reduction to a single AST
+  // final reduction to a single AST
   while (op_stack.sp > 0) {
     ASTBinaryNode *rhs = node_stack[--node_sp];
     ASTBinaryNode *lhs = node_stack[--node_sp];
@@ -127,7 +125,7 @@ ASTBinaryNode* parse_stream(TokenStream *ts) {
   }
 
   if (node_sp != 1) exit(EXIT_PARSE_UNBALANCED_PARENS);
-  return node_stack[0];  // The root of the AST
+  return node_stack[0];
 }
 
 void ast_parse_trace(ASTBinaryNode *node, int depth) {

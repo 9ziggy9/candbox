@@ -106,6 +106,8 @@ int main(void) {
 #define PARSE_IMPL
 #include "parse.h"
 
+
+void ast_parse_trace_vert(ASTBinaryNode *, int, int);
 void handle_stream_error(int exit_code, void *args) {
   (void) args;
   token_print_error((error_stream_t) exit_code);
@@ -124,6 +126,8 @@ int main(void) {
   printf("\nABSTRACT SYNTAX TREE:\n");
   ASTBinaryNode *ast_root = parse_stream(&stream);
   ast_parse_trace(ast_root, 0);
+
+  return EXIT_SUCCESS;
 }
 
 #endif // PARSE_TEST
