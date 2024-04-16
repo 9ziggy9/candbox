@@ -107,7 +107,5 @@ void token_stream_trace(TokenStream *stream) {
   }
 }
 
-(35 * (1 + 3 + 4) ) / (100 + (3 / 2))
-
 #endif // LEXER_IMPL
 #endif // LEXER_H_

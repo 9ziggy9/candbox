@@ -6,8 +6,10 @@
 
 #define LEXER_IMPL
 #include "lexer.h"
+
 #define PARSE_IMPL
 #include "parse.h"
+
 #define EVAL_IMPL
 #include "eval.h"
 
