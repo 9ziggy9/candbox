@@ -17,6 +17,8 @@
     - [[#c-is-weakly-typed][C is *weakly* typed]]
     - [[#hello-world-finally][hello world! (finally)]]
     - [[#pointers-string-literals-and-format-specifiers][POINTERS: string literals and format specifiers]]
+- [[#projects][Projects]]
+  - [[#calcu][calcu]]
 - [[#references][References]]
     - [[#beejs-guide-to-c-programming][Beej's Guide to C Programming]]
     - [[#beejs-other-guides][Beej's other guides]]
@@ -649,6 +651,11 @@ Most hexdumps are formatted more like this
   formats (typically used to examine assembler) is the entirely online
   application [[https://godbolt.org/]].
 
+* Projects
+Links to candbox related projects
+** [[https://github.com/9ziggy9/calcu][calcu]]
+What started as a simple parsing example is slowly becoming
+my attempt at a very stupid programming language...
 * References
 There is an infinite supply of C programming resources
 and I'll note a few here in order of what I feel is the
