@@ -16,7 +16,10 @@
 - [[#lets-get-started][Let's get started!]]
     - [[#c-is-weakly-typed][C is *weakly* typed]]
     - [[#hello-world-finally][hello world! (finally)]]
-    - [[#pointers-string-literals-and-format-specifiers][POINTERS: string literals and format specifiers]]
+    - [[#pointers-i-string-literals][POINTERS I: string literals]]
+    - [[#our-very-first-segfault-and-const-keyword-d][Our very first segfault (and const keyword) :D]]
+    - [[#format-specifiers-aka-data-is-just-data][Format specifiers (AKA data is just data)]]
+      - [[#table-of-format-specifiers][Table of Format Specifiers]]
 - [[#projects][Projects]]
   - [[#calcu][calcu]]
 - [[#references][References]]
@@ -509,11 +512,11 @@ enough to /link/ the implementation /objects/ for you. \\
 
 As previously discussed, we return 0 to indicate the program terminated
 successfullly. \\
-*** POINTERS: string literals and format specifiers
+*** POINTERS I: string literals
 C has string literals but they come with some things to keep in mind. First,
 as you are probably aware, a string is actually an array of characters. How
 those characters are encoded can vary language to language but in C the /char/
-type corresponds to good ol' fashioned ASCII.
+type corresponds to good ol' fashioned ASCII (chars are ALWAYS 8-bit, period).
 
 #+BEGIN_SRC c
 #include <stdio.h>
@@ -575,7 +578,7 @@ Let's direct our attention to the very last two entries here:
 #+END_SRC
 The very last one, well, that's your pointer.
 #+BEGIN_QUOTE
-It is absolutely critical to understand that a pointer is itself a variable*
+It is absolutely critical to understand that a pointer is itself a *variable*
 which is stored in memory! It's *value* is a *memory address*!
 #+END_QUOTE
 Do you see how our pointer contains the memory address where 'h' is stored?\\
@@ -650,7 +653,135 @@ Most hexdumps are formatted more like this
   In any case, a popular tool which can help you to explore these different
   formats (typically used to examine assembler) is the entirely online
   application [[https://godbolt.org/]].
+*** Our very first segfault (and const keyword) :D
+String literals are always stored in the so called "read-only"
+section of static memory. Once declared, a string literal CANNOT
+be modified, i.e., you cannot index into a location and change that
+character.\\
+Okay... but the thing is... you can actually try. On most systems, the
+following code is going to cause the kernel to "segmentation fault", which
+is a fancy way of saying "crash because we tried to do something bad with
+memory". 
+#+BEGIN_SRC c
+#include <stdio.h>
 
+int main(void) {
+  char *hello = "Hello, world!\n";
+  hello[1] = 'i'; // BAD!
+
+  return 0;
+}
+#+END_SRC
+So why did this happen? Well, because we are trying to access a read-only
+section of memory and /write/ to it. The compiler didn't stop us, so the
+/operating system kernel/ did. Why didn't the compiler try to stop us? Dude,
+your guess is as good as mine. Probably because C is still used to target
+architectures where string literals may NOT be read-only? Well, in any case
+here is some idiomatic C to make your life easier:
+#+BEGIN_SRC c
+#include <stdio.h>
+
+int main(void) {
+  const char *hello = "Hello, world!\n";
+  hello[1] = 'i'; // compiler warns us :D
+
+  return 0;
+}
+#+END_SRC
+You'll note that when you run this you now get an appropriate error message:
+#+BEGIN_SRC
+main.c:5:12: error: read-only variable is not assignable
+    5 |   hello[1] = 'i';
+      |   ~~~~~~~~ ^
+#+END_SRC
+Which is 1000000x better than us just crashing. Here we can actually see what
+exactly went wrong.
+The *const* keyword (or /qualifier/) is a promise we make to the compiler to
+never alter the data we are initiailizing. However, it is important to note
+that while we cannot alter the data which we point to in this case, we can
+/indirect/ this pointer to another memory address, at which point, the
+data at that memory address will not be modifiable.\\
+This subtlety rarely comes up but you should know. In any case, when you say
+*const*, make sure you /mean it/. Here's some code to prove the subtlety:
+#+BEGIN_SRC c
+#include <stdio.h>
+
+int main(void) {
+  const char *hello = "Hello, world!\n";
+  char *goodbye = "Goodbye, moon\n";
+
+  hello = goodbye;
+
+  printf("%s\n", hello); // Goodbye, moon!
+
+  hello[0] = "H"; // <-- compiler says no still
+
+  return 0;
+}
+#+END_SRC
+
+*** Format specifiers (AKA data is just data)
+We have been using stuff like /%s/ and /%c/ and /%d/ in our string
+literals. These things are "placeholders", but they are nameless. So
+if you come from the world of JavaScript or Python, know that what you
+think of as an "interpolated string" is effectively what we are doing
+here, save for the fact that these values are /injected by order/ as
+arguments from something like *printf* (the f stands for "format" and
+these type of strings (which contain format specifiers) are often
+called "format strings").\\
+When you say "%s", you mean that the data you are passing is a string,
+and the compiler then knows to /expand/ that string, /pointer to null
+terminator/. When you say "%d" you mean an unsigned 32-bit integer in decimal
+format, "%c" the character representation of an 8-bit integer, etc, etc.
+Why do you have to do this? *C is weakly typed*,
+so again, at the end of the day, if you pass a string /hello/ like
+#+BEGIN_SRC c
+const char *hello = "Hello, world!\n";
+printf("%s\n", hello);
+#+END_SRC
+if you were to *not* specify that you want to print a string, C only knows
+that you gave it some data. It has *absolutely no additional context* to
+draw from in order to format your output correctly. Sometimes this is useful!
+Want to know some ASCII character codes? Here:
+#+BEGIN_SRC c
+#include <stdio.h>
+
+int main(void) {
+  const char *abc = "abcdefghijklmnop";
+  while (*abc != '\0') printf("ASCII: %d\n", *abc++);
+  return 0;
+}
+#+END_SRC
+This works because I am printing each character in the string as a number.
+What about the whole incrementing /abc/ thing? Well, it turns out, since strings
+are *arrays* in the sense that they are stored in a /contiguous memory region/,
+C affords us a nice syntactic sugar where incrementing a pointer, causes the
+pointer to point to the next piece of data. This is an example of
+/pointer arithmetic/, and we will talk about this more later.\\
+**** Table of Format Specifiers
+*THERE ARE A LOT OF FORMAT SPECIFIERS IN C*, here is a small table.
+#+BEGIN_QUOTE
+| Specifier | Usage        | Description                                   |
+|-----------+--------------+-----------------------------------------------|
+| %d        | printf/scanf | Decimal integer                               |
+| %i        | printf/scanf | Integer, base 10                              |
+| %u        | printf/scanf | Unsigned decimal integer                      |
+| %f        | printf/scanf | Floating point number (with lowercase output) |
+| %F        | printf       | Floating point number (with uppercase output) |
+| %e        | printf/scanf | Scientific notation (lowercase)               |
+| %E        | printf/scanf | Scientific notation (uppercase)               |
+| %g        | printf/scanf | Shortest representation of %f or %e           |
+| %G        | printf/scanf | Shortest representation of %F or %E           |
+| %x        | printf/scanf | Unsigned hexadecimal integer (lowercase)      |
+| %X        | printf/scanf | Unsigned hexadecimal integer (uppercase)      |
+| %o        | printf/scanf | Unsigned octal integer                        |
+| %s        | printf/scanf | String of characters                          |
+| %c        | printf/scanf | Character                                     |
+| %p        | printf       | Pointer (address in hexadecimal)              |
+| %n        | printf/scanf | Number of characters written/read so far      |
+| %%        | printf/scanf | A literal '%' character                       |
+#+END_QUOTE
+You can even create your own [[https://www.gnu.org/software/libc/manual/html_node/Registering-New-Conversions.html][apparently]]
 * Projects
 Links to candbox related projects
 ** [[https://github.com/9ziggy9/calcu][calcu]]
