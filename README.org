@@ -20,6 +20,7 @@
     - [[#our-very-first-segfault-and-const-keyword-d][Our very first segfault (and const keyword) :D]]
     - [[#format-specifiers-aka-data-is-just-data][Format specifiers (AKA data is just data)]]
       - [[#table-of-format-specifiers][Table of Format Specifiers]]
+    - [[#c-arrays][C arrays]]
 - [[#projects][Projects]]
   - [[#calcu][calcu]]
 - [[#references][References]]
@@ -759,29 +760,31 @@ C affords us a nice syntactic sugar where incrementing a pointer, causes the
 pointer to point to the next piece of data. This is an example of
 /pointer arithmetic/, and we will talk about this more later.\\
 **** Table of Format Specifiers
-*THERE ARE A LOT OF FORMAT SPECIFIERS IN C*, here is a small table.
+Here is a table of the most common format specifiers.
 #+BEGIN_QUOTE
-| Specifier | Usage        | Description                                   |
-|-----------+--------------+-----------------------------------------------|
-| %d        | printf/scanf | Decimal integer                               |
-| %i        | printf/scanf | Integer, base 10                              |
-| %u        | printf/scanf | Unsigned decimal integer                      |
-| %f        | printf/scanf | Floating point number (with lowercase output) |
-| %F        | printf       | Floating point number (with uppercase output) |
-| %e        | printf/scanf | Scientific notation (lowercase)               |
-| %E        | printf/scanf | Scientific notation (uppercase)               |
-| %g        | printf/scanf | Shortest representation of %f or %e           |
-| %G        | printf/scanf | Shortest representation of %F or %E           |
-| %x        | printf/scanf | Unsigned hexadecimal integer (lowercase)      |
-| %X        | printf/scanf | Unsigned hexadecimal integer (uppercase)      |
-| %o        | printf/scanf | Unsigned octal integer                        |
-| %s        | printf/scanf | String of characters                          |
-| %c        | printf/scanf | Character                                     |
-| %p        | printf       | Pointer (address in hexadecimal)              |
-| %n        | printf/scanf | Number of characters written/read so far      |
-| %%        | printf/scanf | A literal '%' character                       |
+| Specifier | Description                                   |
+|-----------+-----------------------------------------------|
+| %d        | Decimal integer                               |
+| %i        | Integer, base 10                              |
+| %u        | Unsigned decimal integer                      |
+| %f        | Floating point number (with lowercase output) |
+| %F        | Floating point number (with uppercase output) |
+| %e        | Scientific notation (lowercase)               |
+| %E        | Scientific notation (uppercase)               |
+| %g        | Shortest representation of %f or %e           |
+| %G        | Shortest representation of %F or %E           |
+| %x        | Unsigned hexadecimal integer (lowercase)      |
+| %X        | Unsigned hexadecimal integer (uppercase)      |
+| %o        | Unsigned octal integer                        |
+| %s        | String of characters                          |
+| %c        | Character                                     |
+| %p        | Pointer (address in hexadecimal)              |
+| %n        | Number of characters written/read so far      |
+| %%        | A literal '%' character                       |
 #+END_QUOTE
 You can even create your own [[https://www.gnu.org/software/libc/manual/html_node/Registering-New-Conversions.html][apparently]]
+*** C arrays
+TODO
 * Projects
 Links to candbox related projects
 ** [[https://github.com/9ziggy9/calcu][calcu]]
