@@ -27,9 +27,10 @@ TokenStream lex_expr(char *);
 void token_stream_trace(TokenStream *);
 
 typedef enum {
-  EXIT_STREAM_OVERFLOW = 9000,
-  EXIT_STREAM_ALLOC_FAIL,
-  EXIT_STREAM_INVALID_CHAR,
+  EXIT_STREAM_OVERFLOW = 9000       ,
+  EXIT_STREAM_ALLOC_FAIL            ,
+  EXIT_STREAM_INVALID_CHAR          ,
+  EXIT_STREAM_UNEXPECTED_TERMINATOR ,
 } error_stream_t;
 void token_print_error(error_stream_t);
 
@@ -42,6 +43,7 @@ void token_print_error(error_stream_t e) {
     LOG_BREAK_ERR(EXIT_STREAM_OVERFLOW);
     LOG_BREAK_ERR(EXIT_STREAM_ALLOC_FAIL);
     LOG_BREAK_ERR(EXIT_STREAM_INVALID_CHAR);
+    LOG_BREAK_ERR(EXIT_STREAM_UNEXPECTED_TERMINATOR);
     }
   }
 }
@@ -114,14 +116,14 @@ void token_stream_trace(TokenStream *stream) {
     case OPAREN: printf("[op: %s]", STR_FROM_OP(OPAREN)); break;
     case CPAREN: printf("[op: %s]", STR_FROM_OP(CPAREN)); break;
     case NUMERIC_F:
-      printf("[%s: %lf]",
-             STR_FROM_OP(NUMERIC_F), stream->tks[count].value.fval);
+      printf("[%s: %lf]", STR_FROM_OP(NUMERIC_F),
+             stream->tks[count].value.fval);
       break;
     case NUMERIC_I:
-      printf("[%s: %ld]",
-             STR_FROM_OP(NUMERIC_I), stream->tks[count].value.ival);
+      printf("[%s: %ld]", STR_FROM_OP(NUMERIC_I),
+             stream->tks[count].value.ival);
       break;
-    case TERMINATOR: break;
+    case TERMINATOR: exit(EXIT_STREAM_UNEXPECTED_TERMINATOR);
     }
     count++;
     printf(count < stream->n_tks ? " -> " : "\n");

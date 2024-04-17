@@ -13,12 +13,12 @@ typedef enum {
 } error_parse_t;
 
 typedef struct ASTBinaryNode {
-  token_kind kind;
   struct ASTBinaryNode *lhs, *rhs;
-  double value;
+  token_kind kind;
+  ValueNumeric value;
 } ASTBinaryNode;
-ASTBinaryNode * // MUST be pointer due to tree structure
-ast_node_init(token_kind, double, ASTBinaryNode *, ASTBinaryNode *);
+// ast_node_init(): MUST return pointer for tree manipulation
+ASTBinaryNode *ast_node_init(Token, ASTBinaryNode *, ASTBinaryNode *);
 
 typedef struct {
   Token *ops;
@@ -33,12 +33,13 @@ ASTBinaryNode *parse_stream(TokenStream *);
 void ast_parse_trace(ASTBinaryNode *, int);
 
 #ifdef PARSE_IMPL
-ASTBinaryNode *
-ast_node_init(token_kind k, double v, ASTBinaryNode *lhs, ASTBinaryNode *rhs)
+ASTBinaryNode *ast_node_init(Token tk, ASTBinaryNode *lhs, ASTBinaryNode *rhs)
 {
   ASTBinaryNode *node = (ASTBinaryNode *) malloc(sizeof(ASTBinaryNode));
   if (node == NULL) exit(EXIT_PARSE_NODE_ALLOC_FAIL);
-  node->kind = k; node->value = v; node->lhs = lhs; node->rhs = rhs;
+  node->kind = tk.kind;
+  node->value = tk.value;
+  node->lhs = lhs; node->rhs = rhs;
   return node;
 }
 
@@ -63,7 +64,10 @@ static int precedence(token_kind op) {
   switch(op) {
   case OP_MUL: case OP_DIV: return 2;
   case OP_ADD: case OP_SUB: return 1;
-  case CPAREN: case OPAREN: case TERMINATOR: case NUMERIC_F:
+  // no ops
+  case CPAREN: case OPAREN:
+  case NUMERIC_I: case NUMERIC_F:
+  case TERMINATOR:
   default: return 0;
   }
 }
@@ -79,26 +83,26 @@ static int is_right_associative(token_kind op) {
 }
 
 #define MAX_PARSE 256
-ASTBinaryNode* parse_stream(TokenStream *ts) {
+ASTBinaryNode* parse_stream(TokenStream *ts) { // refactor me
   OpStack op_stack = op_stack_init(MAX_PARSE);
-  ASTBinaryNode *node_stack[MAX_PARSE];  // TODO: refactor
+  ASTBinaryNode *node_stack[MAX_PARSE];
   size_t node_sp = 0;
 
   Token tkn;
   while ((tkn = next_token(ts)).kind != TERMINATOR) {
     switch (tkn.kind) {
     case NUMERIC_F:
-      node_stack[node_sp++] = ast_node_init(NUMERIC_F,
-                                            tkn.value.fval, NULL, NULL);
-      break;
+    case NUMERIC_I:
+        node_stack[node_sp++] = ast_node_init(tkn, NULL, NULL); break;
     case OPAREN: op_push(&op_stack, tkn); break;
     case CPAREN:
-      while (op_stack.sp > 0 && op_stack.ops[op_stack.sp - 1].kind != OPAREN)
+      while (op_stack.sp > 0 &&
+             op_stack.ops[op_stack.sp - 1].kind != OPAREN)
       {
         ASTBinaryNode *rhs = node_stack[--node_sp];
         ASTBinaryNode *lhs = node_stack[--node_sp];
         Token op = op_pop(&op_stack);
-        node_stack[node_sp++] = ast_node_init(op.kind, 0, lhs, rhs);
+        node_stack[node_sp++] = ast_node_init(op, lhs, rhs);
       }
       if (op_stack.sp == 0 || op_stack.ops[op_stack.sp - 1].kind != OPAREN)
         exit(EXIT_PARSE_UNBALANCED_PARENS);
@@ -113,7 +117,7 @@ ASTBinaryNode* parse_stream(TokenStream *ts) {
         ASTBinaryNode *rhs = node_stack[--node_sp];
         ASTBinaryNode *lhs = node_stack[--node_sp];
         Token op = op_pop(&op_stack);
-        node_stack[node_sp++] = ast_node_init(op.kind, 0, lhs, rhs);
+        node_stack[node_sp++] = ast_node_init(op, lhs, rhs);
       }
       op_push(&op_stack, tkn);
     }
@@ -124,7 +128,7 @@ ASTBinaryNode* parse_stream(TokenStream *ts) {
     ASTBinaryNode *rhs = node_stack[--node_sp];
     ASTBinaryNode *lhs = node_stack[--node_sp];
     Token op = op_pop(&op_stack);
-    node_stack[node_sp++] = ast_node_init(op.kind, 0, lhs, rhs);
+    node_stack[node_sp++] = ast_node_init(op, lhs, rhs);
   }
 
   if (node_sp != 1) exit(EXIT_PARSE_UNBALANCED_PARENS);
@@ -139,7 +143,8 @@ void ast_parse_trace(ASTBinaryNode *node, int depth) {
   }
 
   switch (node->kind) {
-  case NUMERIC_F: printf("%.2f\n", node->value); break;
+  case NUMERIC_F: printf("%.2lf\n", node->value.fval); break;
+  case NUMERIC_I: printf("%ld\n", node->value.ival); break;
   case OP_ADD: printf("+\n"); break;
   case OP_SUB: printf("-\n"); break;
   case OP_MUL: printf("*\n"); break;
