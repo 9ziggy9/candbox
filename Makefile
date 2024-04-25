@@ -1,6 +1,5 @@
-CC=clang
-CFLAGS=-Wall -Wextra -pedantic -Wconversion \
-			 -Wunreachable-code -Wswitch-enum -Wno-gnu
+CC=gcc
+CFLAGS=-Wall -Wextra -pedantic -Wconversion -Wunreachable-code -Werror
 EXE=./run
 
 all: clean main
